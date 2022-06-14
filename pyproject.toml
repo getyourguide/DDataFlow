@@ -6,6 +6,11 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+databricks-cli = {version = "^0.16.6"}
+pyspark = "^3.2.1"
+
+[tool.poetry.scripts]
+mltools  = 'ddataflow_cli'
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

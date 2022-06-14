@@ -1,7 +1,5 @@
 import os
-
 import pytest
-
 from ddataflow import DDataflow
 
 
@@ -55,5 +53,5 @@ def test_temp_table_name():
     assert ddataflow._get_source_name_only("location") == "location"
     ddataflow.enable()
     assert (
-        ddataflow._get_source_name_only("location") == "unit_tests_dim_location"
+        ddataflow._get_source_name_only("location") == "unit_tests_location"
     )

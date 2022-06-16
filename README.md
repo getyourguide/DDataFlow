@@ -3,17 +3,19 @@
 DDataFlow is an end2end tests and local development solution for machine learning and data pipelines.
 
 
-### Features
+## Features
 
 - Read a subset of our data so to speed up the running of the pipelines
 - Enables to run on the  pipelines in the CI
 - Write to a test location our artifacts  so you don't pollute production
 - Download data for enabling local machine development
 
-# Steps
 ## 1. Install Ddataflow
 
 pip install ddataflow
+
+## Integration Steps
+
 
 ## 2. Mapping your data sources
 

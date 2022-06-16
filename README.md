@@ -1,7 +1,7 @@
 # DDataFlow
 
 DDataFlow is an end2end tests and local development solution for machine learning and data pipelines.
-This is the integration guide of DDataflow.
+
 
 ### Features
 

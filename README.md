@@ -172,4 +172,4 @@ That's it!
 
 ## Support
 
-In case of questions reach out in #mlplatform-support.
+In case of questions feel free to reach out or create an issue.

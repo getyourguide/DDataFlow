@@ -342,3 +342,7 @@ class DDataflow:
                 ),
             }
         return result
+
+def main():
+    import fire
+    fire.Fire(DDataflow)

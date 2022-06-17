@@ -23,7 +23,7 @@ def test_sql():
 
     result = spark.sql(query)
     # default amount of tours
-    assert result.collect()[0].total > 50000
+    assert result.collect()[0].total > 10000
 
     ddataflow.enable()
     result = spark.sql(query)

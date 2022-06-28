@@ -33,9 +33,10 @@ class DataSource:
         df = self.query_without_filter(spark)
 
         if self.config.get("filter") is not None:
+            print(f"Filter set for {self.name}, applying it")
             df = self.config["filter"](df)
         else:
-            logger.warn(f"No filter set for {self.name}")
+            print(f"No filter set for {self.name}")
 
         return df
 

@@ -1,20 +1,22 @@
 # DDataFlow
 
-DDataFlow is an end2end tests and local development solution for machine learning and data pipelines.
-
+DDataFlow is an end2end tests and local development solution for machine learning and data pipelines using pyspark.
 
 ## Features
 
 - Read a subset of our data so to speed up the running of the pipelines
-- Enables to run on the  pipelines in the CI
 - Write to a test location our artifacts  so you don't pollute production
 - Download data for enabling local machine development
 
+Enables to run on the pipelines in the CI
+
 ## 1. Install Ddataflow
 
+```sh
 pip install ddataflow
+```
 
-## Integration Steps
+# Integration Steps
 
 
 ## 2. Mapping your data sources
@@ -53,7 +55,6 @@ config = {
 # initialize the application and validate the configuration
 ddataflow_client = DDataflow(**config)
 ```
-
 
 ## 3. Estimating your data size
 

@@ -84,6 +84,24 @@ class DDataflow:
             self.enable_offline()
 
     @staticmethod
+    def setup_project():
+        content = '''
+from ddataflow import DDataflow
+
+config = {
+    "data_sources": {},
+    "project_folder_name": "myproject",
+}
+
+# initialize the application and validate the configuration
+ddataflow_client = DDataflow(**config)
+'''
+
+        with open('ddataflow_config.py', 'w') as f:
+            f.write(content)
+
+
+    @staticmethod
     def current_project() -> "DDataflow":
         """
         Returns a ddataflow configured with the current directory configuration file
@@ -238,7 +256,6 @@ class DDataflow:
             raise WriterNotFoundException(name)
 
         if self._ddataflow_enabled:
-
             writing_path = self._dbfs_path
 
             if self._offline_enabled:
@@ -337,7 +354,7 @@ class DDataflow:
         for source in sources:
             result[source] = {
                 "source": lambda spark: spark.table(source),
-                "filter": lambda df: df.sample(0.1).limit(
+                "filter": lambda df: df.limit(
                     DDataflow._DEFAULT_SAMPLING_SIZE
                 ),
             }

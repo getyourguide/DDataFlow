@@ -41,6 +41,7 @@ class DataSource:
         return df
 
     def query_without_filter(self, spark):
+        logger.info(f"Querying without filter {self.name}")
         return self.config["source"](spark)
 
     def query_locally(self, spark):
@@ -110,6 +111,8 @@ class DataSources:
         return list(self.data_source.keys())
 
     def get_data_source(self, name) -> DataSource:
+        if name not in self.data_source:
+            raise Exception(f"Data source does not exist {name}")
         return self.data_source[name]
 
     def get_filter(self, data_source_name: str):

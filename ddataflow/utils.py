@@ -1,6 +1,5 @@
 def get_or_create_spark():
     from pyspark.sql import SparkSession
-
     return SparkSession.builder.getOrCreate()
 
 

@@ -21,6 +21,7 @@ class DDataflow:
     _ENABLE_DDATAFLOW_ENVVARIABLE = "ENABLE_DDATAFLOW"
     _ENABLE_OFFLINE_MODE_ENVVARIABLE = "ENABLE_OFFLINE_MODE"
     _DEFAULT_SAMPLING_SIZE = 1000
+    _DDATAFLOW_CONFIG_FILE = 'ddataflow_config.py'
 
     _local_path: str
 
@@ -32,7 +33,6 @@ class DDataflow:
         data_source_size_limit_gb: int = 1,
         enable_ddataflow=False,
         sources_with_default_sampling: Optional[List[str]] = None,
-        spark=None,
     ):
         """
         Initialize the dataflow object.
@@ -50,7 +50,6 @@ class DDataflow:
         """
         self._size_limit = data_source_size_limit_gb
 
-        self._spark = spark
 
         self.project_folder_name = project_folder_name
         self._dbfs_path = self._DBFS_BASE_SNAPSHOT_PATH + "/" + project_folder_name
@@ -89,16 +88,28 @@ class DDataflow:
 from ddataflow import DDataflow
 
 config = {
+    # add here tables or paths to data sources with default sampling
+    "sources_with_default_sampling": [],
+    # add here your tables or paths with customized sampling logic
     "data_sources": {},
+    # add here your writing logic
+    "data_writers": {},
+    # this is the name of the project to identify this project in the filesystem
     "project_folder_name": "myproject",
+    # to customize the location of your datasets 
+    # "snapshot_path": "dbfs:/another_databricks_path",
+    # to customize the size of your samples uncomment the line below
+    # "data_source_size_limit_gb": "5"
 }
 
 # initialize the application and validate the configuration
 ddataflow_client = DDataflow(**config)
 '''
 
-        with open('ddataflow_config.py', 'w') as f:
+        with open(DDataflow._DDATAFLOW_CONFIG_FILE, 'w') as f:
             f.write(content)
+
+        print(f"File {DDataflow._DDATAFLOW_CONFIG_FILE} created in the current directory")
 
 
     @staticmethod
@@ -135,10 +146,8 @@ ddataflow_client = DDataflow(**config)
         return ddataflow_config.ddataflow
 
     def _get_spark(self):
-        if self._spark is None:
-            self._spark = get_or_create_spark()
+        return get_or_create_spark()
 
-        return self._spark
 
     def enable(self):
         """
@@ -159,24 +168,25 @@ ddataflow_client = DDataflow(**config)
         Gives access to the data source configured in the dataflow
         You can also use this function in the terminal with --debugger=True to inspect hte dataframe.
         """
-        print("Debugger enabled: ", debugger)
+        logger.info("Debugger enabled: ", debugger)
         self.printStatus()
 
-        print("Loading data source")
+        logger.info("Loading data source")
         data_source: DataSource = self._data_sources.get_data_source(name)
-        print("Data source loaded")
+        logger.info("Data source loaded")
         df = self._get_df_from_source(data_source)
 
         if debugger:
-            print("In debug mode now, use query to inspect it")
+            logger.info("In debug mode now, use query to inspect it")
             breakpoint()
 
         return df
 
     def source_name(self, name):
-        """Used to mark tables in sql statements"""
-        print("Source name used: ", name)
-
+        """
+        Return a new table name for the sampled data
+        """
+        logger.info("Source name used: ", name)
         source_name = self._get_source_name_only(name)
 
         if self._ddataflow_enabled:
@@ -188,6 +198,13 @@ ddataflow_client = DDataflow(**config)
             return source_name
 
         return source_name
+
+    def name(self, name_str):
+        """
+        A shorthand for source_name
+        """
+        return self.source_name(name_str)
+
 
     def _get_source_name_only(self, name) -> str:
         if self._ddataflow_enabled:
@@ -335,15 +352,15 @@ ddataflow_client = DDataflow(**config)
         elif self._ddataflow_enabled:
             print(
                 """
-                DDataflow is now ENABLED in ONLINE mode.
-                So filtered data will be used and it will write to
-                temporary tables"""
+DDataflow is now ENABLED in ONLINE mode.
+So filtered data will be used and it will write to
+temporary tables"""
             )
         else:
             print(
-                "DDataflow is now DISABLED, so PRODUCTION data will be used",
-                " and it will write to production tables",
-                f"Use enable() funcion  or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable",
+                f"""
+DDataflow is now DISABLED, so PRODUCTION data will be used and it will write to production tables.
+Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable"""
             )
 
     def _build_default_sampling_for_sources(self, sources=None):
@@ -352,6 +369,7 @@ ddataflow_client = DDataflow(**config)
             return result
 
         for source in sources:
+            print("Build default sampling for source: " + source)
             result[source] = {
                 "source": lambda spark: spark.table(source),
                 "filter": lambda df: df.limit(

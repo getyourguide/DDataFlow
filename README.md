@@ -16,8 +16,9 @@ Enables to run on the pipelines in the CI
 pip install ddataflow
 ```
 
-# 5M Getting Started Tutorial
-You can also find it in our examples folder.
+# Getting Started (<5min Tutorial)
+
+You can also find the source code in our examples folder.
 
 ## 1. Create some synthetic data
 
@@ -64,7 +65,7 @@ config = {
 ddataflow_client = DDataflow(**config)
 ```
 
-Note: the command *ddtaflow setup_project* creates a file like this for you.
+Note: the command **ddtaflow setup_project** creates a file like this for you.
 
 
 ## 3. Create an example pipeline

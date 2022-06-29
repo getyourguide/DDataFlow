@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "DDataFlow"
-version = "0.1.5"
+version = "0.1.6"
 description = "A tool for end2end data tests"
 authors = ["Data products GYG <engineering.data-products@getyourguide.com>"]
 

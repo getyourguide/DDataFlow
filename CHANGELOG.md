@@ -1,3 +1,7 @@
+
+# 0.1.6
+- Make examples simpler
+- Use ddataflow instead of ddataflow_object in the setup examples
 # 0.1.5
 - Improve documentation and add an example
 - Improve the setup_project options and documentation

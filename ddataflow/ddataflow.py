@@ -103,7 +103,7 @@ config = {
 }
 
 # initialize the application and validate the configuration
-ddataflow_client = DDataflow(**config)
+ddataflow = DDataflow(**config)
 '''
 
         with open(DDataflow._DDATAFLOW_CONFIG_FILE, 'w') as f:
@@ -142,6 +142,13 @@ ddataflow_client = DDataflow(**config)
         sys.path.append(current_folder)
 
         import ddataflow_config
+
+        if hasattr(ddataflow_config, 'ddataflow_client'):
+            return ddataflow_config.ddataflow_client
+
+
+        if not hasattr(ddataflow_config, 'ddataflow'):
+            raise Exception("ddataflow object is not defined in your config file")
 
         return ddataflow_config.ddataflow
 

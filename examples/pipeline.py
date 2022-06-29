@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from ddataflow_config import ddataflow_client as ddataflow
+from ddataflow_config import ddataflow
 spark = SparkSession.builder.getOrCreate()
 spark.read.parquet("/tmp/demo_locations.parquet").registerTempTable("demo_locations")
 spark.read.parquet("/tmp/demo_tours.parquet").registerTempTable("demo_tours")
@@ -16,10 +16,5 @@ def inspect_dataframes():
     })
 
 
-print("By default return the real dataset")
-inspect_dataframes()
-
-ddataflow.enable()
-print("If enabled dataframes should be sampled")
 inspect_dataframes()
 

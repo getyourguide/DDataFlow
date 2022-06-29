@@ -62,7 +62,7 @@ config = {
 }
 
 # initialize the application and validate the configuration
-ddataflow_client = DDataflow(**config)
+ddataflow = DDataflow(**config)
 ```
 
 Note: the command **ddtaflow setup_project** creates a file like this for you.
@@ -73,7 +73,7 @@ Note: the command **ddtaflow setup_project** creates a file like this for you.
 ```py
 # filename: pipeline.py
 from pyspark.sql import SparkSession
-from ddataflow_config import ddataflow_client as ddataflow
+from ddataflow_config import ddataflow
 spark = SparkSession.builder.getOrCreate()
 spark.read.parquet("/tmp/demo_locations.parquet").registerTempTable("demo_locations")
 spark.read.parquet("/tmp/demo_tours.parquet").registerTempTable("demo_tours")
@@ -90,17 +90,14 @@ def inspect_dataframes():
     })
 
 
-print("By default return the real dataset")
-inspect_dataframes()
-
-ddataflow.enable()
-print("If enabled dataframes should be sampled")
 inspect_dataframes()
 ```
-And run it: **python pipeline.py**
+Now run it twice and observe the difference in the amount of records
+**python pipeline.py**
+**ENABLE_DDATAFLOW=True python pipeline.py**
 
 You will see that the dataframes are sampled when ddataflow is enabled and full when the tool is disabled.
-Thats it for the demo, for further details see the integration manual in the docs.
+Thats it for the short demo. For further features and details see the integration manual in the docs.
 
 ## Support
 

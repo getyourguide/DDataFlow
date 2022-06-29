@@ -21,4 +21,4 @@ config = {
 }
 
 # initialize the application and validate the configuration
-ddataflow_client = DDataflow(**config)
+ddataflow = DDataflow(**config)

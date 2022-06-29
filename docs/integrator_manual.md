@@ -149,14 +149,16 @@ Add the following to your drone.yml file, in the section before you create the p
 
 ## 8. Setup data locally
 
-DDataflow also enables one to develop with local data.
-We see this though as a more advanced use case, which might be
-the first choice for everybody.
-First, make a copy of the files you need to download in dbfs.
+DDataflow also enables one to develop with local data. We see this though as a more advanced use case, which might be
+the first choice for everybody. First, make a copy of the files you need to download in dbfs.
 
+```py
+ddataflow.save_sampled_data_sources(ask_confirmation=False)
+```
 
+Then in your machine:
 ```sh
-ddataflow current_project sample_and_download
+$ ddataflow current_project download_data_sources
 ```
 
 Now you can use the pipeline locally by exporting the following env variables:

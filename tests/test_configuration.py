@@ -49,9 +49,10 @@ def test_temp_table_name():
     }
 
     ddataflow = DDataflow(**config)
+    ddataflow.disable()
     # by default do not override
-    assert ddataflow._get_source_name_only("location") == "location"
+    assert ddataflow.name("location", disable_view_creation=True) == "location"
     ddataflow.enable()
     assert (
-        ddataflow._get_source_name_only("location") == "unit_tests_location"
+            ddataflow.name("location", disable_view_creation=True) == "unit_tests_location"
     )

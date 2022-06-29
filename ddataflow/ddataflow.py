@@ -189,36 +189,43 @@ ddataflow = DDataflow(**config)
 
         return df
 
-    def source_name(self, name):
+    def source_name(self, name, disable_view_creation=False):
         """
         Return a new table name for the sampled data
         """
         logger.info("Source name used: ", name)
-        source_name = self._get_source_name_only(name)
+        source_name = name
 
         if self._ddataflow_enabled:
-            print(f"Creating a temp view the the name: {source_name}")
+            source_name = self._get_new_table_name(name)
+            if disable_view_creation:
+                return source_name
+
+
+            print(f"Creating a temp view with the name: {source_name}")
             data_source: DataSource = self._data_sources.get_data_source(name)
-            df = data_source.query(self._get_spark())
-            df.createOrReplaceTempView(source_name)
+
+            if self._offline_enabled:
+                df = data_source.query_locally(self._get_spark())
+            else:
+                df = data_source.query(self._get_spark())
+
 
             return source_name
 
         return source_name
 
-    def name(self, name_str):
+    def _get_new_table_name(self, name) -> str:
+        overriden_name = name.replace("dwh.", "")
+        return self.project_folder_name + "_" + overriden_name
+
+    def name(self, *args, **kwargs):
         """
         A shorthand for source_name
         """
-        return self.source_name(name_str)
+        return self.source_name(*args, **kwargs)
 
 
-    def _get_source_name_only(self, name) -> str:
-        if self._ddataflow_enabled:
-            overriden_name = name.replace("dwh.", "")
-            return self.project_folder_name + "_" + overriden_name
-
-        return name
 
     def disable(self):
         """Disable ddtaflow overriding tables, uses production state in other words"""
@@ -371,6 +378,7 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
             )
 
     def _build_default_sampling_for_sources(self, sources=None):
+        """ Setup standard filters for the entries that we do not specify them"""
         result = {}
         if not sources:
             return result

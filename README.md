@@ -92,8 +92,9 @@ def inspect_dataframes():
 
 inspect_dataframes()
 ```
-Now run it twice and observe the difference in the amount of records
+Now run it twice and observe the difference in the amount of records:
 **python pipeline.py**
+
 **ENABLE_DDATAFLOW=True python pipeline.py**
 
 You will see that the dataframes are sampled when ddataflow is enabled and full when the tool is disabled.

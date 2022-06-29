@@ -201,7 +201,6 @@ ddataflow = DDataflow(**config)
             if disable_view_creation:
                 return source_name
 
-
             print(f"Creating a temp view with the name: {source_name}")
             data_source: DataSource = self._data_sources.get_data_source(name)
 
@@ -210,6 +209,7 @@ ddataflow = DDataflow(**config)
             else:
                 df = data_source.query(self._get_spark())
 
+            df.createOrReplaceTempView(source_name)
 
             return source_name
 
@@ -364,15 +364,15 @@ ddataflow = DDataflow(**config)
         elif self._ddataflow_enabled:
             print(
                 """
-DDataflow is now ENABLED in ONLINE mode.
-So filtered data will be used and it will write to
-temporary tables"""
+DDataflow is now ENABLED in ONLINE mode. Filtered data will be used and it will write to temporary tables
+"""
             )
         else:
             print(
                 f"""
-DDataflow is now DISABLED, so PRODUCTION data will be used and it will write to production tables.
-Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable"""
+DDataflow is now DISABLED. So PRODUCTION data will be used and it will write to production tables.
+Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable
+"""
             )
 
     def _build_default_sampling_for_sources(self, sources=None):

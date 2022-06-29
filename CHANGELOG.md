@@ -1,4 +1,7 @@
 
+# 0.1.8
+- Fix missing creating tmp view
+- Improve messages indentation
 # 0.1.7
 - Fix source_name for offline mode
 - Fix tests

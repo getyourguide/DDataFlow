@@ -1,4 +1,7 @@
 
+# 0.1.7
+- Fix source_name for offline mode
+- Fix tests
 # 0.1.6
 - Make examples simpler
 - Use ddataflow instead of ddataflow_object in the setup examples

@@ -225,8 +225,6 @@ ddataflow = DDataflow(**config)
         """
         return self.source_name(*args, **kwargs)
 
-
-
     def disable(self):
         """Disable ddtaflow overriding tables, uses production state in other words"""
         self._ddataflow_enabled = False

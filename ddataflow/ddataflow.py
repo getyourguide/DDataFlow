@@ -99,7 +99,7 @@ config = {
     # to customize the location of your datasets 
     # "snapshot_path": "dbfs:/another_databricks_path",
     # to customize the size of your samples uncomment the line below
-    # "data_source_size_limit_gb": "5"
+    # "data_source_size_limit_gb": 3
 }
 
 # initialize the application and validate the configuration

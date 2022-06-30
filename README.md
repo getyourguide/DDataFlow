@@ -94,7 +94,9 @@ Now run it twice and observe the difference in the amount of records:
 **ENABLE_DDATAFLOW=True python pipeline.py**
 
 You will see that the dataframes are sampled when ddataflow is enabled and full when the tool is disabled.
-Thats it for the short demo. This demo is amed to work everywhere and show a subset of features, for the complete reference see the integration manual in the docs.
+
+
+You completed the short demo! This demo only shows a subset of features though, for the complete reference see the integration manual in the docs.
 
 ## Support
 

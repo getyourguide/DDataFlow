@@ -1,7 +1,8 @@
 import os
 
 import pyspark.sql.functions as F
-from pyspark.sql.session import SparkSession;
+from pyspark.sql.session import SparkSession
+
 from ddataflow import DDataflow
 
 data = [
@@ -95,9 +96,8 @@ def test_mlflow():
 
     # when it is enabled write do a special place in dbfs
     ddataflow.enable()
-    assert (
-        "dbfs:/ddataflow/my_tests/MyModel"
-        == ddataflow.get_mlflow_path(original_model_path)
+    assert "dbfs:/ddataflow/my_tests/MyModel" == ddataflow.get_mlflow_path(
+        original_model_path
     )
 
     # when it is in offline mode write to the local filesystems

@@ -1,10 +1,10 @@
+import logging as logger
 import os
 from typing import Any, Dict, List
 
 from ddataflow.exceptions import BiggerThanMaxSize
-from ddataflow.utils import (estimate_spark_dataframe_size,
-                                     get_or_create_spark)
-import logging as logger
+from ddataflow.utils import estimate_spark_dataframe_size, get_or_create_spark
+
 
 class DataSource:
     """

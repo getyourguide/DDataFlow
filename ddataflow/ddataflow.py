@@ -1,3 +1,4 @@
+import logging as logger
 import os
 from typing import List, Optional, Union
 
@@ -5,9 +6,8 @@ from ddataflow.data_source import DataSource, DataSources
 from ddataflow.downloader import DataSourceDownloader
 from ddataflow.exceptions import WriterNotFoundException
 from ddataflow.sampler import DataSourceSampler
-from ddataflow.utils import (get_or_create_spark,
-                                     using_databricks_connect)
-import logging as logger
+from ddataflow.utils import get_or_create_spark, using_databricks_connect
+
 
 class DDataflow:
     """
@@ -21,7 +21,7 @@ class DDataflow:
     _ENABLE_DDATAFLOW_ENVVARIABLE = "ENABLE_DDATAFLOW"
     _ENABLE_OFFLINE_MODE_ENVVARIABLE = "ENABLE_OFFLINE_MODE"
     _DEFAULT_SAMPLING_SIZE = 1000
-    _DDATAFLOW_CONFIG_FILE = 'ddataflow_config.py'
+    _DDATAFLOW_CONFIG_FILE = "ddataflow_config.py"
 
     _local_path: str
 
@@ -49,7 +49,6 @@ class DDataflow:
          if you have tables you want to have by default and dont want to sample them first
         """
         self._size_limit = data_source_size_limit_gb
-
 
         self.project_folder_name = project_folder_name
         self._dbfs_path = self._DBFS_BASE_SNAPSHOT_PATH + "/" + project_folder_name
@@ -84,33 +83,9 @@ class DDataflow:
 
     @staticmethod
     def setup_project():
-        content = '''
-from ddataflow import DDataflow
+        from ddataflow.setup_project import setup_project
 
-config = {
-    # add here tables or paths to data sources with default sampling
-    "sources_with_default_sampling": [],
-    # add here your tables or paths with customized sampling logic
-    "data_sources": {},
-    # add here your writing logic
-    "data_writers": {},
-    # this is the name of the project to identify this project in the filesystem
-    "project_folder_name": "myproject",
-    # to customize the location of your datasets 
-    # "snapshot_path": "dbfs:/another_databricks_path",
-    # to customize the size of your samples uncomment the line below
-    # "data_source_size_limit_gb": 3
-}
-
-# initialize the application and validate the configuration
-ddataflow = DDataflow(**config)
-'''
-
-        with open(DDataflow._DDATAFLOW_CONFIG_FILE, 'w') as f:
-            f.write(content)
-
-        print(f"File {DDataflow._DDATAFLOW_CONFIG_FILE} created in the current directory")
-
+        setup_project(DDataflow._DDATAFLOW_CONFIG_FILE)
 
     @staticmethod
     def current_project() -> "DDataflow":
@@ -143,18 +118,16 @@ ddataflow = DDataflow(**config)
 
         import ddataflow_config
 
-        if hasattr(ddataflow_config, 'ddataflow_client'):
+        if hasattr(ddataflow_config, "ddataflow_client"):
             return ddataflow_config.ddataflow_client
 
-
-        if not hasattr(ddataflow_config, 'ddataflow'):
+        if not hasattr(ddataflow_config, "ddataflow"):
             raise Exception("ddataflow object is not defined in your config file")
 
         return ddataflow_config.ddataflow
 
     def _get_spark(self):
         return get_or_create_spark()
-
 
     def enable(self):
         """
@@ -376,7 +349,7 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
             )
 
     def _build_default_sampling_for_sources(self, sources=None):
-        """ Setup standard filters for the entries that we do not specify them"""
+        """Setup standard filters for the entries that we do not specify them"""
         result = {}
         if not sources:
             return result
@@ -385,12 +358,12 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
             print("Build default sampling for source: " + source)
             result[source] = {
                 "source": lambda spark: spark.table(source),
-                "filter": lambda df: df.limit(
-                    DDataflow._DEFAULT_SAMPLING_SIZE
-                ),
+                "filter": lambda df: df.limit(DDataflow._DEFAULT_SAMPLING_SIZE),
             }
         return result
 
+
 def main():
     import fire
+
     fire.Fire(DDataflow)

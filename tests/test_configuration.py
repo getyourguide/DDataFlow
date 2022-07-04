@@ -1,5 +1,7 @@
 import os
+
 import pytest
+
 from ddataflow import DDataflow
 
 
@@ -31,8 +33,7 @@ def test_current_project_path():
     assert ddataflow._get_overriden_arctifacts_current_path() is None
     ddataflow.enable()
     assert (
-        "dbfs:/ddataflow/my_tests"
-        == ddataflow._get_overriden_arctifacts_current_path()
+        "dbfs:/ddataflow/my_tests" == ddataflow._get_overriden_arctifacts_current_path()
     )
     ddataflow.enable_offline()
     assert (
@@ -54,5 +55,5 @@ def test_temp_table_name():
     assert ddataflow.name("location", disable_view_creation=True) == "location"
     ddataflow.enable()
     assert (
-            ddataflow.name("location", disable_view_creation=True) == "unit_tests_location"
+        ddataflow.name("location", disable_view_creation=True) == "unit_tests_location"
     )

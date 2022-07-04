@@ -1,4 +1,6 @@
-
+# 0.1.9
+- Refactorings
+- Fix setup command GB to int
 # 0.1.8
 - Fix missing creating tmp view
 - Improve messages indentation

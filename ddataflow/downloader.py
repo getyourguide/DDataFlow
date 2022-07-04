@@ -1,7 +1,8 @@
+import logging as logger
 import os
 
 from ddataflow.data_source import DataSource, DataSources
-import logging as logger
+
 
 class DataSourceDownloader:
 

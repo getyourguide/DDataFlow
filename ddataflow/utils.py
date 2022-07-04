@@ -1,5 +1,6 @@
 def get_or_create_spark():
     from pyspark.sql import SparkSession
+
     return SparkSession.builder.getOrCreate()
 
 
@@ -11,7 +12,7 @@ def estimate_spark_dataframe_size(spark_dataframe):
         spark_dataframe.count()
         * len(spark_dataframe.columns)
         * average_variable_size_bytes
-    ) / (1024 ** 3)
+    ) / (1024**3)
 
 
 def summarize_spark_dataframe(spark_dataframe):

@@ -1,8 +1,9 @@
 import pytest
+from pyspark.sql.session import SparkSession
 
 from ddataflow import DDataflow
 from ddataflow.utils import using_databricks_connect
-from pyspark.sql.session import SparkSession
+
 
 @pytest.mark.skipif(
     not using_databricks_connect(), reason="needs databricks connect to work"

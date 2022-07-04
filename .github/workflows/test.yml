@@ -27,6 +27,7 @@ jobs:
       - name: Install dependencies
         run: | 
           pip install poetry
+          poetry config --local virtualenvs.create false
           poetry install
 
       # Runs a set of commands using the runners shell

@@ -164,7 +164,7 @@ $ ddataflow current_project download_data_sources
 Now you can use the pipeline locally by exporting the following env variables:
 
 ```shell
-export ENABLE_DDATAFLOW=true ; export ENABLE_OFFLINE_MODE=true
+export ENABLE_OFFLINE_MODE=true
 # run your pipeline as normal
 python yourproject/train.py
 ```

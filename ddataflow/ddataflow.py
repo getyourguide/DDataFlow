@@ -114,7 +114,7 @@ class DDataflow:
                 f"\n Additionally, the file needs to configure a ddataflow object within it."
             )
 
-        sys.path.append(current_folder)
+        sys.wath.append(current_folder)
 
         import ddataflow_config
 
@@ -164,7 +164,8 @@ class DDataflow:
 
     def source_name(self, name, disable_view_creation=False):
         """
-        Return a new table name for the sampled data
+        Given the name of a production table, returns the name of the corresponding ddataflow table when ddataflow is enabled
+        If ddataflow is disabled get the production one.
         """
         logger.info("Source name used: ", name)
         source_name = name
@@ -187,6 +188,17 @@ class DDataflow:
             return source_name
 
         return source_name
+
+    def path(self, path):
+        """
+        returns a deterministic path replacing the real production path with one based on teh current environment needs
+        """
+        if not self._ddataflow_enabled:
+            return path
+
+        base_path = self._get_current_environment_data_folder()
+
+        return base_path + "/" + path.replace("dbfs:/", "")
 
     def _get_new_table_name(self, name) -> str:
         overriden_name = name.replace("dwh.", "")
@@ -361,6 +373,15 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
                 "filter": lambda df: df.limit(DDataflow._DEFAULT_SAMPLING_SIZE),
             }
         return result
+
+    def _get_current_environment_data_folder(self) -> Optional[str]:
+        if not self._ddataflow_enabled:
+            raise Exception("DDataflow is disabled so no data folder is available")
+
+        if self._offline_enabled:
+            return self._local_path
+
+        return self._dbfs_path
 
 
 def main():

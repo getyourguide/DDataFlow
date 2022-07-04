@@ -1,3 +1,5 @@
+# 0.1.10
+- Support ddataflow.path to only replace the path in an environment
 # 0.1.9
 - Refactorings
 - Fix setup command GB to int

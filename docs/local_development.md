@@ -19,3 +19,6 @@ export ENABLE_OFFLINE_MODE=true
 # run your pipeline as normal
 python yourproject/train.py
 ```
+
+
+The downloaded data sources will be stored at `$HOME/.ddataflow`.

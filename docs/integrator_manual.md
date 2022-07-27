@@ -1,19 +1,24 @@
 # DDataFlow
 
-DDataFlow is an end2end tests and local development solution for machine learning and data pipelines.
-This is the integration guide of DDataflow.
+This is the DDataFlow integration manual.
+If you want to know how to use DDataFlow in the local machine, see [this section](local_development).
 
-# Steps
-
-## 1. Install Ddataflow
+## Install Ddataflow
 
 ```sh
 pip install ddataflow
 ```
 
-## 2. Mapping your data sources
+## Mapping your data sources
 
-You can either start in a notebook, using databricks-connect or in the repository with db-rocket.
+DDataflow is declarative and is completely configurable a single configuration in DDataflow startup. To create a configuration for you project simply run:
+
+```shell
+
+ddataflow setup_project
+```
+
+You can use this config also in in a notebook, or using databricks-connect or in the repository with db-rocket. Example config below:
 
 ```py
 #later save this script as ddataflow_config.py to follow our convention
@@ -49,10 +54,9 @@ config = {
 ddataflow_client = DDataflow(**config)
 ```
 
-## 3. Estimating your data size
+## Estimating your data size
 
-Use the estimate_source_size function to narrow down the size of your dataset by changing the filter options until
-you are
+Use the estimate_source_size function to narrow down the size of your dataset by changing the filter options until you are
 satisfied with the result.
 
 ```sh
@@ -60,7 +64,7 @@ ddataflow_client.estimate_source_size('ActivityCardImpression')
 #Estimated size of the Dataset in GB:  1.2867986224591732
 ```
 
-## 4. Replace the sources
+## Replace the sources
 
 Replace in your code the calls to the original data sources for the ones provided by ddataflow.
 
@@ -79,8 +83,7 @@ ddataflow_client.source("ActivityCardImpression")
 ```
 
 Its not a problem if you dont map all data sources if you dont map one it will keep going to production tables and
-might be slower.
-From this point you can use dddataflow to run your pipelines on the sample data instead of the full data.
+might be slower. From this point you can use dddataflow to run your pipelines on the sample data instead of the full data.
 
 **Note: BY DEFUAULT ddataflow is DISABLED, so the calls will attempt to go to production, which if done wrong can
 lead to writing trash data**.
@@ -106,45 +109,18 @@ At any point in time you can check if the tool is enabled or disabled by running
 ddataflow_client.printStatus()
 ```
 
-## 6. Setup Data writers
+## Writing data
 
-Writers are what we use to write data in our pipelines.
-DDdataflow also provides an abstraction to write the data to a
-different location while it is enabled.
-
-Add  writers entry in your config as well:
+To write data we adivse you use the same code as production just write to a different destination.
+DDataflow provides the path function that will return a path in ddataflow when ddataflow is enable.
 
 ```py
-# in ddataflow_config.py
-
-     "data_writers": {
-        "gdp.latest_sellout_likelihood_predictions_slot_level": {
-            "writer": lambda df, name, spark: df.write.mode("overwrite").saveAsTable(
-                name
-            )
-        },
-    }
-}
-```
-
-Now in your code replace:
-
-```py
-df.write.mode("overwrite").saveAsTable("gdp.latest_sellout_likelihood_predictions_slot_level")
-```
-
-with
-
-```py
-ddataflow_client.write('gdp.latest_sellout_likelihood_predictions_slot_level')
-
+final_path = ddataflow.path('/mnt/my/production/path')
+# final path will be /mnt/my/production/path when ddataflow is disabled
+# final path will be $DDATAFLOW_FOLDER/project_name/mnt/my/production/path when ddataflow is enabled
 ```
 
 And you are good to go!
-
-## 7. Add to the CI
-
-Add the following to your drone.yml file, in the section before you create the production Docker image.
 
 ## 8. Setup data locally
 
@@ -171,7 +147,3 @@ python yourproject/train.py
 
 Your pipeline now should work with local data!
 That's it!
-
-## Support
-
-In case of questions reach out in #mlplatform-support.

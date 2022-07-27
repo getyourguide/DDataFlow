@@ -122,7 +122,7 @@ final_path = ddataflow.path('/mnt/my/production/path')
 
 And you are good to go!
 
-## 8. Setup data locally
+## Develop locally with sampled data
 
 DDataflow also enables one to develop with local data. We see this though as a more advanced use case, which might be
 the first choice for everybody. First, make a copy of the files you need to download in dbfs.

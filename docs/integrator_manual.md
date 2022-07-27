@@ -112,12 +112,12 @@ ddataflow_client.printStatus()
 ## Writing data
 
 To write data we adivse you use the same code as production just write to a different destination.
-DDataflow provides the path function that will return a path in ddataflow when ddataflow is enable.
+DDataflow provides the path function that will return a staging path when ddataflow is enabled.
 
 ```py
 final_path = ddataflow.path('/mnt/my/production/path')
-# final path will be /mnt/my/production/path when ddataflow is disabled
-# final path will be $DDATAFLOW_FOLDER/project_name/mnt/my/production/path when ddataflow is enabled
+# final_path=/mnt/my/production/path when ddataflow is DISABLED
+# final path=$DDATAFLOW_FOLDER/project_name/mnt/my/production/path when ddataflow is ENABLED
 ```
 
 And you are good to go!

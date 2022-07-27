@@ -3,21 +3,18 @@
 DDataFlow is an end2end tests and local development solution for machine learning and data pipelines.
 This is the integration guide of DDataflow.
 
-### Features
-
-- Read a subset of our data so to speed up the running of the pipelines
-- Enables to run on the  pipelines in the CI
-- Write to a test location our artifacts  so you don't pollute production
-- Download data for enabling local machine development
-
 # Steps
+
 ## 1. Install Ddataflow
 
+```sh
 pip install ddataflow
+```
 
 ## 2. Mapping your data sources
 
 You can either start in a notebook, using databricks-connect or in the repository with db-rocket.
+
 ```py
 #later save this script as ddataflow_config.py to follow our convention
 from ddataflow import DDataflow
@@ -52,12 +49,12 @@ config = {
 ddataflow_client = DDataflow(**config)
 ```
 
-
 ## 3. Estimating your data size
 
 Use the estimate_source_size function to narrow down the size of your dataset by changing the filter options until
 you are
 satisfied with the result.
+
 ```sh
 ddataflow_client.estimate_source_size('ActivityCardImpression')
 #Estimated size of the Dataset in GB:  1.2867986224591732
@@ -73,12 +70,14 @@ spark.read.parquet("dbfs:/mnt/analytics/cleaned/v1/ActivityCardImpression") # ..
 ```
 
 Replace with the following:
+
 ```py
 from ddataflow_config import ddataflow_client
 
 ddataflow_client.source('events')
 ddataflow_client.source("ActivityCardImpression")
 ```
+
 Its not a problem if you dont map all data sources if you dont map one it will keep going to production tables and
 might be slower.
 From this point you can use dddataflow to run your pipelines on the sample data instead of the full data.
@@ -106,7 +105,6 @@ At any point in time you can check if the tool is enabled or disabled by running
 ```py
 ddataflow_client.printStatus()
 ```
-
 
 ## 6. Setup Data writers
 
@@ -141,6 +139,7 @@ with
 ddataflow_client.write('gdp.latest_sellout_likelihood_predictions_slot_level')
 
 ```
+
 And you are good to go!
 
 ## 7. Add to the CI
@@ -157,8 +156,9 @@ ddataflow.save_sampled_data_sources(ask_confirmation=False)
 ```
 
 Then in your machine:
+
 ```sh
-$ ddataflow current_project download_data_sources
+ddataflow current_project download_data_sources
 ```
 
 Now you can use the pipeline locally by exporting the following env variables:

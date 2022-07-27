@@ -18,7 +18,7 @@ pip install ddataflow
 
 # Getting Started (<5min Tutorial)
 
-You can also find the source code in our examples folder.
+This tutorial aims to show you the core features though, for the complete reference see the [integration manual](docs/integrator_manual.md) in the docs.
 
 ## 1. Create some synthetic data
 
@@ -67,7 +67,6 @@ ddataflow = DDataflow(**config)
 
 Note: the command **ddtaflow setup_project** creates a file like this for you.
 
-
 ## 3. Create an example pipeline
 
 ```py
@@ -75,6 +74,9 @@ Note: the command **ddtaflow setup_project** creates a file like this for you.
 from pyspark.sql import SparkSession
 from ddataflow_config import ddataflow
 spark = SparkSession.builder.getOrCreate()
+
+# register the tables to mimick a real environment 
+# when you use ddatflow for real you will have your production tables in place already
 spark.read.parquet("/tmp/demo_locations.parquet").registerTempTable("demo_locations")
 spark.read.parquet("/tmp/demo_tours.parquet").registerTempTable("demo_tours")
 
@@ -88,6 +90,7 @@ print({
     "total_tours": total_tours,
 })
 ```
+
 Now run it twice and observe the difference in the amount of records:
 **python pipeline.py**
 
@@ -95,7 +98,7 @@ Now run it twice and observe the difference in the amount of records:
 
 You will see that the dataframes are sampled when ddataflow is enabled and full when the tool is disabled.
 
-You completed the short demo! This demo only shows a subset of features though, for the complete reference see the [integration manual](docs/integrator_manual.md) in the docs.
+You completed the short demo!
 
 ## Support
 

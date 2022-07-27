@@ -109,9 +109,10 @@ class DDataflow:
 
         if not os.path.exists(config_location):
             raise Exception(
-                f"This command needs to be executed within a project containing a "
-                f" {CONFIGURATION_FILE_NAME} file."
-                f"\n Additionally, the file needs to configure a ddataflow object within it."
+                f"""
+This command needs to be executed within a project containing a {CONFIGURATION_FILE_NAME} file.
+You can start a new one for the current folder by running the following command:
+$ ddataflow setup_project"""
             )
 
         sys.wath.append(current_folder)

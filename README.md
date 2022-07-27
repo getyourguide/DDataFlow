@@ -42,10 +42,9 @@ spark.createDataFrame(tours).write.parquet("/tmp/demo_tours.parquet")
 
 And run it **python create_syntetic_data.py**
 
-## 2. Create a ddataflow config file
+## 2. Create a ddataflow_config.py file
 
 ```py
-# file name: ddataflow-config.py
 from ddataflow import DDataflow
 
 config = {

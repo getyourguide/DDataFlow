@@ -95,8 +95,7 @@ Now run it twice and observe the difference in the amount of records:
 
 You will see that the dataframes are sampled when ddataflow is enabled and full when the tool is disabled.
 
-
-You completed the short demo! This demo only shows a subset of features though, for the complete reference see the integration manual in the docs.
+You completed the short demo! This demo only shows a subset of features though, for the complete reference see the [integration manual](docs/integrator_manual.md) in the docs.
 
 ## Support
 

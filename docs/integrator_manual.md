@@ -1,7 +1,7 @@
 # DDataFlow
 
 This is the DDataFlow integration manual.
-If you want to know how to use DDataFlow in the local machine, see [this section](local_development).
+If you want to know how to use DDataFlow in the local machine, see [this section](local_development.md).
 
 ## Install Ddataflow
 

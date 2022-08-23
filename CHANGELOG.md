@@ -1,3 +1,7 @@
+# 0.2.0
+
+- Fix bug while downloading data sources
+
 # 0.1.12
 
 - Better error messages and documentation

@@ -115,7 +115,7 @@ You can start a new one for the current folder by running the following command:
 $ ddataflow setup_project"""
             )
 
-        sys.wath.append(current_folder)
+        sys.path.append(current_folder)
 
         import ddataflow_config
 

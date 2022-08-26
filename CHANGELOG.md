@@ -1,3 +1,7 @@
+# 1.0.0  - 2022-08-26
+
+- Add missing fire dependency and graduate project to 1.0
+
 # 0.2.0
 
 - Fix bug while downloading data sources

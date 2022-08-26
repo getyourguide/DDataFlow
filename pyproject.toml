@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "DDataFlow"
-version = "0.2.0"
+version = "1.0.0"
 description = "A tool for end2end data tests"
 authors = ["Data products GYG <engineering.data-products@getyourguide.com>"]
 
@@ -8,6 +8,7 @@ authors = ["Data products GYG <engineering.data-products@getyourguide.com>"]
 python = "^3.8"
 databricks-cli = {version = "^0.16.6"}
 pyspark = "^3.2.1"
+fire = "^0.4.0"
 
 [tool.poetry.scripts]
 ddataflow = 'ddataflow.ddataflow:main'

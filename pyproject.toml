@@ -7,7 +7,7 @@ authors = ["Data products GYG <engineering.data-products@getyourguide.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 databricks-cli = {version = "^0.16.6"}
-pyspark = "^3.2.1"
+pyspark = "~=3.2.2"
 fire = "^0.4.0"
 
 [tool.poetry.scripts]

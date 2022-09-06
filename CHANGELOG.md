@@ -1,3 +1,7 @@
+# 1.0.1  - 2022-09-06
+
+- Upgrade dependencies for security reasons
+
 # 1.0.0  - 2022-08-26
 
 - Add missing fire dependency and graduate project to 1.0

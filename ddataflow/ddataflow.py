@@ -228,10 +228,6 @@ $ ddataflow setup_project"""
 
         return base_path + "/" + path.replace("dbfs:/", "")
 
-    def _get_new_table_name(self, name) -> str:
-        overriden_name = name.replace("dwh.", "")
-        return self.project_folder_name + "_" + overriden_name
-
     def name(self, *args, **kwargs):
         """
         A shorthand for source_name

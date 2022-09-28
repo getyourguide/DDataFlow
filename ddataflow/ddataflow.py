@@ -1,6 +1,6 @@
 import logging as logger
 import os
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Callable
 
 from ddataflow.data_source import DataSource, DataSources
 from ddataflow.downloader import DataSourceDownloader
@@ -8,6 +8,23 @@ from ddataflow.exceptions import WriterNotFoundException
 from ddataflow.sampler import DataSourceSampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
+def generate_source_name(name: str, project_folder_name: str) -> str:
+    """Default function to generate the source_name
+
+    The source name affects how the particular datasource is called internally.
+    The default function is here for backwards compatability, however it causes 
+    problems with datasources in another schema when calling createOrReplaceTempView.
+    e.g. `default.events` will return an error creating a temp view
+
+    Args:
+        name (str): The name of the datasource
+        project_folder_name (str): The project_folder_name (Passed due to old version needing it)
+
+    Returns:
+        str: The name the source will be known as internally
+    """
+    cleaned_name = name.replace("dwh.", "")
+    return f"{project_folder_name}_{cleaned_name}"
 
 class DDataflow:
     """
@@ -33,6 +50,7 @@ class DDataflow:
         data_source_size_limit_gb: int = 1,
         enable_ddataflow=False,
         sources_with_default_sampling: Optional[List[str]] = None,
+        generate_source_name: Callable = generate_source_name,
     ):
         """
         Initialize the dataflow object.
@@ -46,9 +64,18 @@ class DDataflow:
         data_source_size_limit_gb:
             limit the size of the data sources
         sources_with_default_sampling:
-         if you have tables you want to have by default and dont want to sample them first
+            if you have tables you want to have by default and dont want to sample them first
+        generate_source_name:
+            A function to generate the name by which the datasource will be referred to internally
+            Args:
+                name (str): The name of the datasource
+                project_folder_name (str): The project_folder_name (Passed due to old version needing it)
+
+            Returns:
+                str: The name the source will be known as internally
         """
         self._size_limit = data_source_size_limit_gb
+        self.generate_source_name = generate_source_name
 
         self.project_folder_name = project_folder_name
         self._dbfs_path = self._DBFS_BASE_SNAPSHOT_PATH + "/" + project_folder_name
@@ -172,7 +199,7 @@ $ ddataflow setup_project"""
         source_name = name
 
         if self._ddataflow_enabled:
-            source_name = self._get_new_table_name(name)
+            source_name = self.generate_source_name(name, self.project_folder_name)
             if disable_view_creation:
                 return source_name
 

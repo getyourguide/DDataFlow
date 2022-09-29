@@ -4,15 +4,6 @@ def get_or_create_spark():
     return SparkSession.builder.getOrCreate()
 
 
-def estimate_spark_dataframe_size(spark_dataframe):
-    # @todo use spark official estimation function
-    # number Of gigabytes = M = (N*V*W) / 1024^3
-    average_variable_size_bytes = 50
-    return (
-        spark_dataframe.count()
-        * len(spark_dataframe.columns)
-        * average_variable_size_bytes
-    ) / (1024**3)
 
 
 def summarize_spark_dataframe(spark_dataframe):

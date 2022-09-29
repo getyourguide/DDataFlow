@@ -2,7 +2,8 @@ import logging as logger
 import os
 from typing import List, Optional, Union
 
-from ddataflow.data_source import DataSource, DataSources
+from ddataflow.data_source import DataSource
+from ddataflow.data_sources import DataSources
 from ddataflow.downloader import DataSourceDownloader
 from ddataflow.exceptions import WriterNotFoundException
 from ddataflow.sampler import DataSourceSampler
@@ -11,7 +12,7 @@ from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
 class DDataflow:
     """
-    DDataflow is our ML end2end tests solution.
+    DDataflow is our end2end tests solution.
     See our integrator manual for details.
     Additionally, use help(ddataflow) to see the available methods.
     """
@@ -51,6 +52,7 @@ class DDataflow:
         self._size_limit = data_source_size_limit_gb
 
         self.project_folder_name = project_folder_name
+
         self._dbfs_path = self._DBFS_BASE_SNAPSHOT_PATH + "/" + project_folder_name
         self._local_path = self._LOCAL_BASE_SNAPSHOT_PATH + "/" + project_folder_name
 
@@ -58,8 +60,8 @@ class DDataflow:
             data_sources = {}
 
         all_data_sources = {
-            **data_sources,
             **self._build_default_sampling_for_sources(sources_with_default_sampling),
+            **data_sources,
         }
 
         self._data_sources = DataSources(
@@ -137,12 +139,15 @@ $ ddataflow setup_project"""
         """
 
         self._ddataflow_enabled = True
-        self.printStatus()
 
     def enable_offline(self):
         """Programatically enable offline mode"""
         self._offline_enabled = True
         self.enable()
+
+    def disable_offline(self):
+        """Programatically enable offline mode"""
+        self._offline_enabled = False
 
     def source(self, name: str, debugger=False):
         """
@@ -150,7 +155,7 @@ $ ddataflow setup_project"""
         You can also use this function in the terminal with --debugger=True to inspect hte dataframe.
         """
         logger.info("Debugger enabled: ", debugger)
-        self.printStatus()
+        self.print_status()
 
         logger.info("Loading data source")
         data_source: DataSource = self._data_sources.get_data_source(name)
@@ -257,7 +262,6 @@ $ ddataflow setup_project"""
         """
         Make a snapshot of the sampled data for later downloading
         """
-        # @todo raise error if not setted up
 
         return DataSourceSampler(self._DBFS_BASE_SNAPSHOT_PATH).sample_all(
             self._data_sources, ask_confirmation
@@ -341,7 +345,7 @@ $ ddataflow setup_project"""
 
         return None
 
-    def printStatus(self):
+    def print_status(self):
         """
         Print the status of the ddataflow
         """
@@ -362,7 +366,9 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
             )
 
     def _build_default_sampling_for_sources(self, sources=None):
-        """Setup standard filters for the entries that we do not specify them"""
+        """
+        Setup standard filters for the entries that we do not specify them
+        """
         result = {}
         if not sources:
             return result

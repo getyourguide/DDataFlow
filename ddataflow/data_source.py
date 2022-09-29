@@ -1,9 +1,9 @@
 import logging as logger
 import os
-from typing import Any, Dict, List
 
+from pyspark.sql import DataFrame
 from ddataflow.exceptions import BiggerThanMaxSize
-from ddataflow.utils import estimate_spark_dataframe_size, get_or_create_spark
+from ddataflow.utils import get_or_create_spark
 
 
 class DataSource:
@@ -41,12 +41,21 @@ class DataSource:
         return df
 
     def query_without_filter(self, spark):
-        logger.info(f"Querying without filter {self.name}")
+        """
+        Go to the raw data source without any filtering
+        """
+        logger.debug(f"Querying without filter source: '{self.name}'")
         return self.config["source"](spark)
 
     def query_locally(self, spark):
         logger.info(f"Querying locally {self.name}")
-        df = spark.read.parquet(self.get_local_path())
+
+        path = self.get_local_path()
+        if not os.path.exists(path):
+            raise Exception(f"""Data source '{self.get_name()}' does not have data locally.
+            Consider downloading using  the following command:
+            ddataflow current_project download_data_sources""")
+        df = spark.read.parquet(path)
 
         return df
 
@@ -62,61 +71,39 @@ class DataSource:
     def get_parquet_filename(self) -> str:
         return self.name + ".parquet"
 
-    def estimate_size_and_fail_if_too_big(self, *, debug=False, return_dataset=False):
+    def estimate_size_and_fail_if_too_big(self):
         """
         Estimate the size of the data source use the name used in the config
         It will throw an exception if the estimated size is bigger than the maximum allowed in the configuration
         """
 
+        print("Estimating size of data source: ", self.get_name())
         spark = get_or_create_spark()
         df = self.query(spark)
         size_estimation = self._estimate_size(df)
 
         print("Estimated size of the Dataset in GB: ", size_estimation)
 
-        if debug:
-            breakpoint()
-
         if size_estimation > self._size_limit:
             raise BiggerThanMaxSize(self.name, size_estimation, self._size_limit)
 
-        if return_dataset:
-            return df
+        return df
 
-    def _estimate_size(self, df):
-        return estimate_spark_dataframe_size(spark_dataframe=df)
+    def _estimate_size(self, df: DataFrame):
+        """
+        Estimatest the size of a dataframe in Gigabytes
+
+        Formula:
+            number of gigabytes = (N*V*W) / 1024^3
+        """
+
+        print(f"Amount of rows in dataframe to estimate size: {df.count()}")
+        average_variable_size_bytes = 50
+        return (
+                       df.count()
+                       * len(df.columns)
+                       * average_variable_size_bytes
+               ) / (1024 ** 3)
 
 
-class DataSources:
-    """
-    Validates and Abstract the access to data sources
-    """
 
-    def __init__(
-        self, *, config, local_folder: str, snapshot_path: str, size_limit: int
-    ):
-        self.config = config
-        self.data_source: Dict[str, Any] = {}
-        self.download_folder = local_folder
-        for data_source_name, data_source_config in self.config.items():
-            self.data_source[data_source_name] = DataSource(
-                name=data_source_name,
-                config=data_source_config,
-                local_data_folder=local_folder,
-                snapshot_path=snapshot_path,
-                size_limit=size_limit,
-            )
-
-    def all_data_sources_names(self) -> List[str]:
-        return list(self.data_source.keys())
-
-    def get_data_source(self, name) -> DataSource:
-        if name not in self.data_source:
-            raise Exception(f"Data source does not exist {name}")
-        return self.data_source[name]
-
-    def get_filter(self, data_source_name: str):
-        return self.config[data_source_name]["query"]
-
-    def get_parquet_name(self, data_source_name: str):
-        return self.config[data_source_name]["parquet_name"]

@@ -1,4 +1,5 @@
-from ddataflow.data_source import DataSource, DataSources
+from ddataflow.data_source import DataSource
+from ddataflow.data_sources import DataSources
 from ddataflow.exceptions import WritingToLocationDenied
 
 
@@ -12,15 +13,15 @@ class DataSourceSampler:
 
     def sample_all(self, data_sources: DataSources, ask_confirmation):
         print(
-            "Starting the process to copy all datasources to a temporary place in dbfs so you can donwload them"
+            "Starting the process to sample all data-sources to a temporary place in dbfs so you can download them."
         )
 
         for data_source_name in data_sources.all_data_sources_names():
             print(f"Starting download process for datasource: {data_source_name}")
-            data_source = data_sources.get_data_source(data_source_name)
+            data_source: DataSource = data_sources.get_data_source(data_source_name)
 
             print(f"Writing copy to folder: {data_source.get_dbfs_sample_path()}")
-            df = data_source.estimate_size_and_fail_if_too_big(return_dataset=True)
+            df = data_source.estimate_size_and_fail_if_too_big()
             if ask_confirmation:
                 proceed = input(
                     f"Proceed with the creation of the data source {data_source_name}? (y/n): "

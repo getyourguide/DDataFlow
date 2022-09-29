@@ -106,7 +106,7 @@ ddataflow_client.enable()
 At any point in time you can check if the tool is enabled or disabled by running:
 
 ```py
-ddataflow_client.printStatus()
+ddataflow_client.print_status()
 ```
 
 ## Writing data

@@ -1,9 +1,17 @@
+from pyspark.sql import SparkSession
+
 def get_or_create_spark():
-    from pyspark.sql import SparkSession
+    return SparkSingleton.get_instance()
 
-    return SparkSession.builder.getOrCreate()
+class SparkSingleton:
+    spark = None
 
+    @staticmethod
+    def get_instance():
+        if SparkSingleton.spark is None:
+            SparkSingleton.spark = SparkSession.builder.getOrCreate()
 
+        return SparkSingleton.spark
 
 
 def summarize_spark_dataframe(spark_dataframe):

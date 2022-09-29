@@ -187,7 +187,7 @@ $ ddataflow setup_project"""
             if self._offline_enabled:
                 df = data_source.query_locally(self._get_spark())
             else:
-                df = data_source.query(self._get_spark())
+                df = data_source.query()
 
             df.createOrReplaceTempView(source_name)
 
@@ -224,7 +224,7 @@ $ ddataflow setup_project"""
         if not self._ddataflow_enabled:
             print("DDataflow not enabled")
             # goes directly to production without prefilters
-            return data_source.query_without_filter(self._get_spark())
+            return data_source.query_without_filter()
 
         if self._offline_enabled:
             # uses snapshot data
@@ -234,10 +234,10 @@ $ ddataflow setup_project"""
                     "without databricks connect in offline mode"
                 )
 
-            return data_source.query_locally(self._get_spark())
+            return data_source.query_locally()
 
         print("DDataflow enabled and filtering")
-        return data_source.query(self._get_spark())
+        return data_source.query()
 
     def download_data_sources(self, overwrite: bool = True, debug=False):
         """

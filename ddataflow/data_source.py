@@ -26,11 +26,11 @@ class DataSource:
         self.snapshot_path = snapshot_path
         self._size_limit = size_limit
 
-    def query(self, spark):
+    def query(self):
         """
         query with filter unless none is present
         """
-        df = self.query_without_filter(spark)
+        df = self.query_without_filter()
 
         if self.config.get("filter") is not None:
             print(f"Filter set for {self.name}, applying it")
@@ -40,14 +40,15 @@ class DataSource:
 
         return df
 
-    def query_without_filter(self, spark):
+    def query_without_filter(self):
         """
         Go to the raw data source without any filtering
         """
+        spark = get_or_create_spark()
         logger.debug(f"Querying without filter source: '{self.name}'")
         return self.config["source"](spark)
 
-    def query_locally(self, spark):
+    def query_locally(self):
         logger.info(f"Querying locally {self.name}")
 
         path = self.get_local_path()
@@ -55,6 +56,7 @@ class DataSource:
             raise Exception(f"""Data source '{self.get_name()}' does not have data locally.
             Consider downloading using  the following command:
             ddataflow current_project download_data_sources""")
+        spark = get_or_create_spark()
         df = spark.read.parquet(path)
 
         return df
@@ -78,8 +80,7 @@ class DataSource:
         """
 
         print("Estimating size of data source: ", self.get_name())
-        spark = get_or_create_spark()
-        df = self.query(spark)
+        df = self.query()
         size_estimation = self._estimate_size(df)
 
         print("Estimated size of the Dataset in GB: ", size_estimation)

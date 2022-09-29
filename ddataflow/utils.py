@@ -1,7 +1,9 @@
 from pyspark.sql import SparkSession
 
+
 def get_or_create_spark():
     return SparkSingleton.get_instance()
+
 
 class SparkSingleton:
     spark = None

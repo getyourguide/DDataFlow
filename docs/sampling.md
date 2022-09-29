@@ -8,9 +8,7 @@ Add the following to your setup.py
     ],
 ```
 
-
 ## With Dbrocket
-
 
 Cell 1
 

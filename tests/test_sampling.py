@@ -12,28 +12,25 @@ def test_abc():
     spark = SparkSession.builder.getOrCreate()
 
     entries = [
-        ['id1', 'Sagrada Familila'],
-        ['id2', 'Eiffel Tower'],
-        ['id3', 'abc'],
+        ["id1", "Sagrada Familila"],
+        ["id2", "Eiffel Tower"],
+        ["id3", "abc"],
     ]
-    df = spark.createDataFrame(entries, ['id', 'name'])
+    df = spark.createDataFrame(entries, ["id", "name"])
     df.createOrReplaceTempView("location")
 
-
-    assert spark.table('location').count() == 3
+    assert spark.table("location").count() == 3
 
     config = {
         "sources_with_default_sampling": ["location"],
         "data_sources": {
             "location_filtered": {
                 "source": lambda spark: spark.table("location"),
-                "filter": lambda df: df.filter(df.name == 'abc'),
+                "filter": lambda df: df.filter(df.name == "abc"),
             }
-
         },
         "project_folder_name": "unit_tests",
     }
-
 
     tmp = DDataflow._DBFS_BASE_SNAPSHOT_PATH
     DDataflow._DBFS_BASE_SNAPSHOT_PATH = "/tmp/ddataflow_test"
@@ -41,12 +38,12 @@ def test_abc():
 
     ddataflow.disable()
     ddataflow.disable_offline()
-    assert ddataflow.source('location').count() == 3
-    assert ddataflow.source('location_filtered').count() == 3
+    assert ddataflow.source("location").count() == 3
+    assert ddataflow.source("location_filtered").count() == 3
 
     ddataflow.enable()
-    assert ddataflow.source('location').count() == 3
-    assert ddataflow.source('location_filtered').count() == 1
+    assert ddataflow.source("location").count() == 3
+    assert ddataflow.source("location_filtered").count() == 1
 
     ddataflow.save_sampled_data_sources(ask_confirmation=False)
 

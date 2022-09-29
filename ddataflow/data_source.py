@@ -2,6 +2,7 @@ import logging as logger
 import os
 
 from pyspark.sql import DataFrame
+
 from ddataflow.exceptions import BiggerThanMaxSize
 from ddataflow.utils import get_or_create_spark
 
@@ -53,9 +54,11 @@ class DataSource:
 
         path = self.get_local_path()
         if not os.path.exists(path):
-            raise Exception(f"""Data source '{self.get_name()}' does not have data locally.
+            raise Exception(
+                f"""Data source '{self.get_name()}' does not have data locally.
             Consider downloading using  the following command:
-            ddataflow current_project download_data_sources""")
+            ddataflow current_project download_data_sources"""
+            )
         spark = get_or_create_spark()
         df = spark.read.parquet(path)
 
@@ -100,11 +103,6 @@ class DataSource:
 
         print(f"Amount of rows in dataframe to estimate size: {df.count()}")
         average_variable_size_bytes = 50
-        return (
-                       df.count()
-                       * len(df.columns)
-                       * average_variable_size_bytes
-               ) / (1024 ** 3)
-
-
-
+        return (df.count() * len(df.columns) * average_variable_size_bytes) / (
+            1024**3
+        )

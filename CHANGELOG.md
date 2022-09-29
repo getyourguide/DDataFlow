@@ -1,6 +1,7 @@
 
 # 1.0.2  - 2022-09-29
-- Loosen up dependenceis 
+
+- Loosen up dependenceis
 
 # 1.0.1  - 2022-09-06
 

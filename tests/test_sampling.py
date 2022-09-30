@@ -5,7 +5,7 @@ from pyspark.sql.session import SparkSession
 from ddataflow import DDataflow
 
 
-def test_abc():
+def test_sampling_end2end():
     """
     Tests that a correct config will not fail to be instantiated
     """

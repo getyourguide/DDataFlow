@@ -22,18 +22,18 @@ def test_sampling_end2end():
     assert spark.table("location").count() == 3
 
     config = {
-        "sources_with_default_sampling": ["location"],
         "data_sources": {
             "location_filtered": {
                 "source": lambda spark: spark.table("location"),
                 "filter": lambda df: df.filter(df._name == "abc"),
+            },
+            'location': {
             }
         },
         "project_folder_name": "unit_tests",
+        "snapshot_path": "/tmp/ddataflow_test",
     }
 
-    tmp = DDataflow._DBFS_BASE_SNAPSHOT_PATH
-    DDataflow._DBFS_BASE_SNAPSHOT_PATH = "/tmp/ddataflow_test"
     ddataflow = DDataflow(**config)
 
     ddataflow.disable()
@@ -50,6 +50,3 @@ def test_sampling_end2end():
     # after sampling the following destinations have the copy
     assert os.path.exists("/tmp/ddataflow_test/unit_tests/location")
     assert os.path.exists("/tmp/ddataflow_test/unit_tests/location_filtered")
-
-    # restore the correct value
-    DDataflow._DBFS_BASE_SNAPSHOT_PATH = tmp

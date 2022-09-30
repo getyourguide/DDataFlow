@@ -18,7 +18,7 @@ class DDataflow:
     Additionally, use help(ddataflow) to see the available methods.
     """
 
-    _DBFS_BASE_SNAPSHOT_PATH = "dbfs:/ddataflow"
+    _DEFAULT_SNAPSHOT_BASE_PATH = "dbfs:/ddataflow"
     _LOCAL_BASE_SNAPSHOT_PATH = os.environ["HOME"] + "/.ddataflow"
     _ENABLE_DDATAFLOW_ENVVARIABLE = "ENABLE_DDATAFLOW"
     _ENABLE_OFFLINE_MODE_ENVVARIABLE = "ENABLE_OFFLINE_MODE"
@@ -34,6 +34,7 @@ class DDataflow:
         data_source_size_limit_gb: int = 1,
         enable_ddataflow=False,
         sources_with_default_sampling: Optional[List[str]] = None,
+        snapshot_path: Optional[str] = None
     ):
         """
         Initialize the dataflow object.
@@ -42,7 +43,7 @@ class DDataflow:
         Important params:
         project_folder_name:
             the _name of the project that will be stored in the disk
-        _snapshot_path:
+        snapshot_path:
             path to the snapshot folder
         data_source_size_limit_gb:
             limit the size of the data sources
@@ -53,7 +54,9 @@ class DDataflow:
 
         self.project_folder_name = project_folder_name
 
-        self._dbfs_path = self._DBFS_BASE_SNAPSHOT_PATH + "/" + project_folder_name
+        base_path = snapshot_path if snapshot_path else self._DEFAULT_SNAPSHOT_BASE_PATH
+
+        self._snapshot_path = base_path + "/" + project_folder_name
         self._local_path = self._LOCAL_BASE_SNAPSHOT_PATH + "/" + project_folder_name
 
         if not data_sources:
@@ -67,7 +70,7 @@ class DDataflow:
         self._data_sources = DataSources(
             config=all_data_sources,
             local_folder=self._local_path,
-            snapshot_path=self._dbfs_path,
+            snapshot_path=self._snapshot_path,
             size_limit=self._size_limit,
         )
 
@@ -264,7 +267,7 @@ $ ddataflow setup_project"""
         Make a snapshot of the sampled data for later downloading
         """
 
-        return Sampler(self._DBFS_BASE_SNAPSHOT_PATH).sample_all(
+        return Sampler(self._snapshot_path).sample_all(
             self._data_sources, ask_confirmation
         )
 
@@ -276,14 +279,14 @@ $ ddataflow setup_project"""
             raise WriterNotFoundException(name)
 
         if self._ddataflow_enabled:
-            writing_path = self._dbfs_path
+            writing_path = self._snapshot_path
 
             if self._offline_enabled:
                 writing_path = self._local_path
             else:
-                if not writing_path.startswith(DDataflow._DBFS_BASE_SNAPSHOT_PATH):
+                if not writing_path.startswith(DDataflow._DEFAULT_SNAPSHOT_BASE_PATH):
                     raise Exception(
-                        f"Only writing to {DDataflow._DBFS_BASE_SNAPSHOT_PATH} is enabled"
+                        f"Only writing to {DDataflow._DEFAULT_SNAPSHOT_BASE_PATH} is enabled"
                     )
 
             writing_path = os.path.join(writing_path, name)
@@ -297,7 +300,7 @@ $ ddataflow setup_project"""
         """
         Read the data writers parquet file which are stored in the ddataflow folder
         """
-        path = self._dbfs_path
+        path = self._snapshot_path
         if self._offline_enabled:
             path = self._local_path
 
@@ -340,7 +343,7 @@ $ ddataflow setup_project"""
             return self._local_path
 
         if self._ddataflow_enabled:
-            return self._dbfs_path
+            return self._snapshot_path
 
         return None
 
@@ -371,7 +374,7 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
         if self._offline_enabled:
             return self._local_path
 
-        return self._dbfs_path
+        return self._snapshot_path
 
 
 def main():

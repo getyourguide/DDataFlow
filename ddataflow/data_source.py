@@ -31,7 +31,7 @@ class DataSource:
         if "source" in self._config:
             self._source = config["source"]
         else:
-            if self._config.get('file-type') == 'parquet':
+            if self._config.get("file-type") == "parquet":
                 self._source = lambda spark: spark.read.parquet(self._name)
             else:
                 self._source = lambda spark: spark.table(self._name)
@@ -39,9 +39,8 @@ class DataSource:
         if "filter" in self._config:
             self._filter = self._config["filter"]
         else:
-            if self._config.get('default_sampling'):
+            if self._config.get("default_sampling"):
                 self._filter = lambda df: filter_function(df)
-
 
     def query(self):
         """

@@ -6,7 +6,8 @@ from ddataflow.data_source import DataSource
 from ddataflow.data_sources import DataSources
 from ddataflow.downloader import DataSourceDownloader
 from ddataflow.exceptions import WriterNotFoundException
-from ddataflow.sampler import DataSourceSampler
+from ddataflow.sampling.sampler import Sampler
+from ddataflow.sampling.default import build_default_sampling_for_sources
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
 
@@ -21,7 +22,6 @@ class DDataflow:
     _LOCAL_BASE_SNAPSHOT_PATH = os.environ["HOME"] + "/.ddataflow"
     _ENABLE_DDATAFLOW_ENVVARIABLE = "ENABLE_DDATAFLOW"
     _ENABLE_OFFLINE_MODE_ENVVARIABLE = "ENABLE_OFFLINE_MODE"
-    _DEFAULT_SAMPLING_SIZE = 1000
     _DDATAFLOW_CONFIG_FILE = "ddataflow_config.py"
 
     _local_path: str
@@ -60,7 +60,7 @@ class DDataflow:
             data_sources = {}
 
         all_data_sources = {
-            **self._build_default_sampling_for_sources(sources_with_default_sampling),
+            **build_default_sampling_for_sources(sources_with_default_sampling),
             **data_sources,
         }
 
@@ -263,7 +263,7 @@ $ ddataflow setup_project"""
         Make a snapshot of the sampled data for later downloading
         """
 
-        return DataSourceSampler(self._DBFS_BASE_SNAPSHOT_PATH).sample_all(
+        return Sampler(self._DBFS_BASE_SNAPSHOT_PATH).sample_all(
             self._data_sources, ask_confirmation
         )
 
@@ -335,8 +335,6 @@ $ ddataflow setup_project"""
         return original_path
 
     def _get_overriden_arctifacts_current_path(self):
-        # return self.
-
         if self._offline_enabled:
             return self._local_path
 
@@ -365,21 +363,6 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
 """
             )
 
-    def _build_default_sampling_for_sources(self, sources=None):
-        """
-        Setup standard filters for the entries that we do not specify them
-        """
-        result = {}
-        if not sources:
-            return result
-
-        for source in sources:
-            print("Build default sampling for source: " + source)
-            result[source] = {
-                "source": lambda spark: spark.table(source),
-                "filter": lambda df: df.limit(DDataflow._DEFAULT_SAMPLING_SIZE),
-            }
-        return result
 
     def _get_current_environment_data_folder(self) -> Optional[str]:
         if not self._ddataflow_enabled:

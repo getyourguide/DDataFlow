@@ -86,6 +86,8 @@ class DDataflow:
         if self._offline_enabled:
             self.enable_offline()
 
+        self.save_sampled_data_sources = Sampler(self._snapshot_path, self._data_sources).save_sampled_data_sources
+
     @staticmethod
     def setup_project():
         from ddataflow.setup_project import setup_project
@@ -261,15 +263,6 @@ $ ddataflow setup_project"""
         """
         self.save_sampled_data_sources(ask_confirmation)
         self.download_data_sources(overwrite)
-
-    def save_sampled_data_sources(self, ask_confirmation=True):
-        """
-        Make a snapshot of the sampled data for later downloading
-        """
-
-        return Sampler(self._snapshot_path).sample_all(
-            self._data_sources, ask_confirmation
-        )
 
     def write(self, df, name: str):
         """

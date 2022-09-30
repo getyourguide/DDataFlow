@@ -27,6 +27,8 @@ class DataSource:
         self._snapshot_path = snapshot_path
         self._size_limit = size_limit
         self._config = config
+        self._filter = None
+        self._source = None
 
         if "source" in self._config:
             self._source = config["source"]
@@ -48,13 +50,16 @@ class DataSource:
         """
         df = self.query_without_filter()
 
-        if self._config.get("filter") is not None:
+        if self._filter is not None:
             print(f"Filter set for {self._name}, applying it")
             df = self._filter(df)
         else:
             print(f"No filter set for {self._name}")
 
         return df
+
+    def has_filter(self) -> bool:
+        return self._filter is not None
 
     def query_without_filter(self):
         """
@@ -80,10 +85,16 @@ class DataSource:
         return df
 
     def get_dbfs_sample_path(self) -> str:
-        return os.path.join(self._snapshot_path, self.get_name())
+        return os.path.join(self._snapshot_path, self._get_name_as_path())
 
     def get_local_path(self) -> str:
-        return os.path.join(self._local_data_folder, self.get_name())
+        return os.path.join(self._local_data_folder, self._get_name_as_path())
+
+    def _get_name_as_path(self):
+        """
+        converts the name when it has "/mnt/envents" in the name to a single file in a (flat structure) _mnt_events
+        """
+        return self.get_name().replace("/", "_")
 
     def get_name(self) -> str:
         return self._name

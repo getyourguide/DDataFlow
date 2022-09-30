@@ -1,6 +1,9 @@
+from typing import Optional, List
+
 from ddataflow.data_source import DataSource
 from ddataflow.data_sources import DataSources
 from ddataflow.exceptions import WritingToLocationDenied
+import os
 
 
 class Sampler:
@@ -8,24 +11,54 @@ class Sampler:
     Samples and copy datasources
     """
 
-    def __init__(self, snapshot_path):
-        self._BASE_SNAPSHOT_PATH = snapshot_path
 
-    def sample_all(self, data_sources: DataSources, ask_confirmation):
+    def __init__(self, snapshot_path: str, data_sources: DataSources):
+        self._BASE_SNAPSHOT_PATH = snapshot_path
+        self._data_sources: DataSources = data_sources
+        self._dry_run = True
+
+    def save_sampled_data_sources(self, *, ask_confirmation=True, skip_existing_samples=False, dry_run=True, sample_only: Optional[List[str]] = None):
+        """
+        Make a snapshot of the sampled data for later downloading.
+
+        The writing part is overriding! SO watch out where you write
+        By default only do a dry-run. Do a dry_run=False to actually write to the sampled folder.
+        """
+        self._dry_run = dry_run
+        if self._dry_run:
+            print('Dry run enabled, no data will be written')
+
+        if sample_only is not None:
+            print(f"Sampling only the following data sources: {sample_only}")
+
         print(
             "Sampling process starting for all data-sources."
-            f"Saving the results to {self._BASE_SNAPSHOT_PATH} so you can download them."
+            f" Saving the results to {self._BASE_SNAPSHOT_PATH} so you can download them."
         )
 
-        for data_source_name in data_sources.all_data_sources_names():
-            print(f"Starting download process for datasource: {data_source_name}")
-            data_source: DataSource = data_sources.get_data_source(data_source_name)
+        for data_source_name in self._data_sources.all_data_sources_names():
 
-            print(f"Writing copy to folder: {data_source.get_dbfs_sample_path()}")
+            if sample_only is not None and data_source_name not in sample_only:
+                print('data_source_name not in selected list', data_source_name)
+                continue
+
+            print(f"Starting sampling process for datasource: {data_source_name}")
+            data_source: DataSource = self._data_sources.get_data_source(data_source_name)
+
+            if skip_existing_samples and os.path.exists(data_source.get_dbfs_sample_path()):
+                print(f'Skipping data source {data_source.get_name()} as it already exists')
+                continue
+
+            print(f"""
+Writing copy to folder: {data_source.get_dbfs_sample_path()}.
+If you are writing to the wrong folder it could lead to data loss.
+            """
+            )
+
             df = data_source.estimate_size_and_fail_if_too_big()
             if ask_confirmation:
                 proceed = input(
-                    f"Proceed with the creation of the data source {data_source_name}? (y/n): "
+                    f"Do you want to proceed with the sampling creation? (y/n):"
                 )
                 if proceed != "y":
                     print("Skipping the creation of the data source")
@@ -46,6 +79,9 @@ class Sampler:
         if not sample_destination.startswith(self._BASE_SNAPSHOT_PATH):
             raise WritingToLocationDenied(self._BASE_SNAPSHOT_PATH)
 
+        if self._dry_run:
+            print('Not writing, dry run enabled')
+            return
         #  add by default repartition so we only download a single file
         df = df.repartition(1)
 

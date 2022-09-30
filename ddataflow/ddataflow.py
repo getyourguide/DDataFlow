@@ -6,8 +6,8 @@ from ddataflow.data_source import DataSource
 from ddataflow.data_sources import DataSources
 from ddataflow.downloader import DataSourceDownloader
 from ddataflow.exceptions import WriterNotFoundException
-from ddataflow.sampling.sampler import Sampler
 from ddataflow.sampling.default import build_default_sampling_for_sources
+from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
 
@@ -37,12 +37,12 @@ class DDataflow:
     ):
         """
         Initialize the dataflow object.
-        The input of this object is the config dictionary outlined in our integrator manual.
+        The input of this object is the _config dictionary outlined in our integrator manual.
 
         Important params:
         project_folder_name:
-            the name of the project that will be stored in the disk
-        snapshot_path:
+            the _name of the project that will be stored in the disk
+        _snapshot_path:
             path to the snapshot folder
         data_source_size_limit_gb:
             limit the size of the data sources
@@ -97,7 +97,7 @@ class DDataflow:
 
         1. MLTools must be called from withing the project root directory
         2. There must be a file called ddataflow_config.py there
-        3. the module must have defined DDataflow object with the name of ddataflow
+        3. the module must have defined DDataflow object with the _name of ddataflow
 
         @todo investigate if we can use import_class_from_string
         """
@@ -106,7 +106,7 @@ class DDataflow:
         CONFIGURATION_FILE_NAME = "ddataflow_config.py"
 
         current_folder = os.getcwd()
-        print("Loading config from folder", current_folder)
+        print("Loading _config from folder", current_folder)
         config_location = os.path.join(current_folder, CONFIGURATION_FILE_NAME)
 
         if not os.path.exists(config_location):
@@ -125,7 +125,7 @@ $ ddataflow setup_project"""
             return ddataflow_config.ddataflow_client
 
         if not hasattr(ddataflow_config, "ddataflow"):
-            raise Exception("ddataflow object is not defined in your config file")
+            raise Exception("ddataflow object is not defined in your _config file")
 
         return ddataflow_config.ddataflow
 
@@ -152,14 +152,15 @@ $ ddataflow setup_project"""
     def source(self, name: str, debugger=False):
         """
         Gives access to the data source configured in the dataflow
-        You can also use this function in the terminal with --debugger=True to inspect hte dataframe.
+
+        You can also use this function in the terminal with --debugger=True to inspect the dataframe.
         """
-        logger.info("Debugger enabled: ", debugger)
+        logger.info(f"Debugger enabled: {debugger}")
         self.print_status()
 
         logger.info("Loading data source")
         data_source: DataSource = self._data_sources.get_data_source(name)
-        logger.info("Data source loaded")
+        logger.debug("Data source loaded")
         df = self._get_df_from_source(data_source)
 
         if debugger:
@@ -170,10 +171,10 @@ $ ddataflow setup_project"""
 
     def source_name(self, name, disable_view_creation=False):
         """
-        Given the name of a production table, returns the name of the corresponding ddataflow table when ddataflow is enabled
+        Given the _name of a production table, returns the _name of the corresponding ddataflow table when ddataflow is enabled
         If ddataflow is disabled get the production one.
         """
-        logger.info("Source name used: ", name)
+        logger.info("Source _name used: ", name)
         source_name = name
 
         if self._ddataflow_enabled:
@@ -181,7 +182,7 @@ $ ddataflow setup_project"""
             if disable_view_creation:
                 return source_name
 
-            print(f"Creating a temp view with the name: {source_name}")
+            print(f"Creating a temp view with the _name: {source_name}")
             data_source: DataSource = self._data_sources.get_data_source(name)
 
             if self._offline_enabled:
@@ -362,7 +363,6 @@ DDataflow is now DISABLED. So PRODUCTION data will be used and it will write to 
 Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable
 """
             )
-
 
     def _get_current_environment_data_folder(self) -> Optional[str]:
         if not self._ddataflow_enabled:

@@ -7,7 +7,7 @@ from ddataflow import DDataflow
 
 def test_sampling_end2end():
     """
-    Tests that a correct config will not fail to be instantiated
+    Tests that a correct _config will not fail to be instantiated
     """
     spark = SparkSession.builder.getOrCreate()
 
@@ -16,7 +16,7 @@ def test_sampling_end2end():
         ["id2", "Eiffel Tower"],
         ["id3", "abc"],
     ]
-    df = spark.createDataFrame(entries, ["id", "name"])
+    df = spark.createDataFrame(entries, ["id", "_name"])
     df.createOrReplaceTempView("location")
 
     assert spark.table("location").count() == 3
@@ -26,7 +26,7 @@ def test_sampling_end2end():
         "data_sources": {
             "location_filtered": {
                 "source": lambda spark: spark.table("location"),
-                "filter": lambda df: df.filter(df.name == "abc"),
+                "filter": lambda df: df.filter(df._name == "abc"),
             }
         },
         "project_folder_name": "unit_tests",

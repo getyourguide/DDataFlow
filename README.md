@@ -1,6 +1,7 @@
 # DDataFlow
 
 DDataFlow is an end2end tests and local development solution for machine learning and data pipelines using pyspark.
+It samples the data as an approach to get slow pipelines run fast in the CI.
 
 ## Features
 
@@ -72,6 +73,7 @@ Note: the command **ddtaflow setup_project** creates a file like this for you.
 # filename: pipeline.py
 from pyspark.sql import SparkSession
 from ddataflow_config import ddataflow
+
 spark = SparkSession.builder.getOrCreate()
 
 # register the tables to mimick a real environment 
@@ -79,10 +81,10 @@ spark = SparkSession.builder.getOrCreate()
 spark.read.parquet("/tmp/demo_locations.parquet").registerTempTable("demo_locations")
 spark.read.parquet("/tmp/demo_tours.parquet").registerTempTable("demo_tours")
 
-# pyspark code using a different source name
-total_locations = spark.table(ddataflow.name('demo_locations')).count()
+# pyspark code using a different source _name
+total_locations = spark.table(ddataflow._name('demo_locations')).count()
 # sql code also works
-total_tours = spark.sql(f""" SELECT COUNT(1) from {ddataflow.name('demo_tours')}""").collect()[0]['count(1)']
+total_tours = spark.sql(f""" SELECT COUNT(1) from {ddataflow._name('demo_tours')}""").collect()[0]['count(1)']
 print("Totals follow below:")
 print({
     "total_locations": total_locations,

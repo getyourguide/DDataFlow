@@ -1,9 +1,9 @@
-from typing import Optional, List
+import os
+from typing import List, Optional
 
 from ddataflow.data_source import DataSource
 from ddataflow.data_sources import DataSources
 from ddataflow.exceptions import WritingToLocationDenied
-import os
 
 
 class Sampler:
@@ -11,13 +11,18 @@ class Sampler:
     Samples and copy datasources
     """
 
-
     def __init__(self, snapshot_path: str, data_sources: DataSources):
         self._BASE_SNAPSHOT_PATH = snapshot_path
         self._data_sources: DataSources = data_sources
         self._dry_run = True
 
-    def save_sampled_data_sources(self, *, ask_confirmation=True, skip_existing_samples=False, dry_run=True, sample_only: Optional[List[str]] = None):
+    def save_sampled_data_sources(
+        self,
+        *,
+        ask_confirmation=True,
+        dry_run=True,
+        sample_only: Optional[List[str]] = None,
+    ):
         """
         Make a snapshot of the sampled data for later downloading.
 
@@ -26,7 +31,7 @@ class Sampler:
         """
         self._dry_run = dry_run
         if self._dry_run:
-            print('Dry run enabled, no data will be written')
+            print("Dry run enabled, no data will be written")
 
         if sample_only is not None:
             print(f"Sampling only the following data sources: {sample_only}")
@@ -39,17 +44,16 @@ class Sampler:
         for data_source_name in self._data_sources.all_data_sources_names():
 
             if sample_only is not None and data_source_name not in sample_only:
-                print('data_source_name not in selected list', data_source_name)
+                print("data_source_name not in selected list", data_source_name)
                 continue
 
             print(f"Starting sampling process for datasource: {data_source_name}")
-            data_source: DataSource = self._data_sources.get_data_source(data_source_name)
+            data_source: DataSource = self._data_sources.get_data_source(
+                data_source_name
+            )
 
-            if skip_existing_samples and os.path.exists(data_source.get_dbfs_sample_path()):
-                print(f'Skipping data source {data_source.get_name()} as it already exists')
-                continue
-
-            print(f"""
+            print(
+                f"""
 Writing copy to folder: {data_source.get_dbfs_sample_path()}.
 If you are writing to the wrong folder it could lead to data loss.
             """
@@ -80,7 +84,7 @@ If you are writing to the wrong folder it could lead to data loss.
             raise WritingToLocationDenied(self._BASE_SNAPSHOT_PATH)
 
         if self._dry_run:
-            print('Not writing, dry run enabled')
+            print("Not writing, dry run enabled")
             return
         #  add by default repartition so we only download a single file
         df = df.repartition(1)

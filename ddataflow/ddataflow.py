@@ -34,7 +34,7 @@ class DDataflow:
         data_source_size_limit_gb: int = 1,
         enable_ddataflow=False,
         sources_with_default_sampling: Optional[List[str]] = None,
-        snapshot_path: Optional[str] = None
+        snapshot_path: Optional[str] = None,
     ):
         """
         Initialize the dataflow object.
@@ -86,7 +86,9 @@ class DDataflow:
         if self._offline_enabled:
             self.enable_offline()
 
-        self.save_sampled_data_sources = Sampler(self._snapshot_path, self._data_sources).save_sampled_data_sources
+        self.save_sampled_data_sources = Sampler(
+            self._snapshot_path, self._data_sources
+        ).save_sampled_data_sources
 
     @staticmethod
     def setup_project():

@@ -75,7 +75,7 @@ class DataSource:
         path = self.get_local_path()
         if not os.path.exists(path):
             raise Exception(
-                f"""Data source '{self.get_name()}' does not have data locally.
+                f"""Data source '{self.get_name()}' does not have data in {path}.
             Consider downloading using  the following command:
             ddataflow current_project download_data_sources"""
             )

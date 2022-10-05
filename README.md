@@ -101,6 +101,11 @@ You will see that the dataframes are sampled when ddataflow is enabled and full 
 
 You completed the short demo!
 
+
 ## Support
 
 In case of questions feel free to reach out or create an issue.
+
+## Contributing
+
+This project requires manual release at the moment. See the docs and request a pypi access if you want to contribute.

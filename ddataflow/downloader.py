@@ -57,8 +57,8 @@ class DataSourceDownloader:
         if result != 0:
             raise Exception(
                 f"""
-            Databricks cli failed!
-            Run it on your terminal to see the details:
+            Databricks cli failed! See error message above.
+            Also consider rerunning the download command in your terminal to see the results.
             {cmd}
             """
             )

@@ -1,3 +1,7 @@
+# 1.1.2  - 2022-10-05
+
+- is_local api added
+
 # 1.1.0  - 2022-09-30
 
 - Support default sampling enablement in the sources configuration

@@ -22,6 +22,5 @@ Cell 2
 
 ```py
 from ddataflow_config import ddataflow
-ddataflow.save_sampled_data_sources(ask_confirmation=False)
-
+ddataflow.save_sampled_data_sources()
 ```

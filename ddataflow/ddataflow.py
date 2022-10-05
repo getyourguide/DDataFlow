@@ -13,7 +13,7 @@ from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
 class DDataflow:
     """
-    DDataflow is our end2end tests solution.
+    DDataflow is an end2end tests solution.
     See our integrator manual for details.
     Additionally, use help(ddataflow) to see the available methods.
     """
@@ -151,6 +151,9 @@ $ ddataflow setup_project"""
         """Programatically enable offline mode"""
         self._offline_enabled = True
         self.enable()
+
+    def is_local(self):
+        return self._offline_enabled
 
     def disable_offline(self):
         """Programatically enable offline mode"""
@@ -348,17 +351,20 @@ $ ddataflow setup_project"""
         """
         if self._offline_enabled:
             print("DDataflow is now ENABLED in OFFLINE mode")
+            print("To disable it remove from your code or unset the enviroment variable 'unset ENABLE_DDATAFLOW ; unset ENABLE_OFFLINE_MODE'")
         elif self._ddataflow_enabled:
             print(
                 """
-DDataflow is now ENABLED in ONLINE mode. Filtered data will be used and it will write to temporary tables
+DDataflow is now ENABLED in ONLINE mode. Filtered data will be used and it will write to temporary tables.
 """
             )
         else:
             print(
                 f"""
 DDataflow is now DISABLED. So PRODUCTION data will be used and it will write to production tables.
-Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable
+Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable it.
+If you are working offline use export ENABLE_OFFLINE_MODE=True instead.
+
 """
             )
 

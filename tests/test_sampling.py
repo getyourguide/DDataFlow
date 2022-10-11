@@ -43,7 +43,7 @@ def test_sampling_end2end():
     assert ddataflow.source("location").count() == 3
     assert ddataflow.source("location_filtered").count() == 1
 
-    ddataflow.save_sampled_data_sources(ask_confirmation=False)
+    ddataflow.save_sampled_data_sources(dry_run=False)
 
     # after sampling the following destinations have the copy
     assert os.path.exists("/tmp/ddataflow_test/unit_tests/location")

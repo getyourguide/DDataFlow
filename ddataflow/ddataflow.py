@@ -147,6 +147,9 @@ $ ddataflow setup_project"""
 
         self._ddataflow_enabled = True
 
+    def is_enabled(self):
+        return self._ddataflow_enabled
+
     def enable_offline(self):
         """Programatically enable offline mode"""
         self._offline_enabled = True

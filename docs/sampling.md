@@ -3,9 +3,7 @@
 Add the following to your setup.py
 
 ```py
-    py_modules=[
-        "ddataflow_config",
-    ],
+
 ```
 
 ## With Dbrocket

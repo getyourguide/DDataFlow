@@ -22,8 +22,8 @@ def configure_spark():
 ```
 
 ## Issues
-### 1. Snappy compression problem
-    Please reinstall pyspark
+
+1. Snappy compression problem: Please reinstall pyspark
     
     
     

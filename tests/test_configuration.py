@@ -7,7 +7,7 @@ from ddataflow import DDataflow
 
 def test_initialize_successfully():
     """
-    Tests that a correct _config will not fail to be instantiated
+    Tests that a correct config will not fail to be instantiated
     """
     from ddataflow.samples.ddataflow_config import config
 

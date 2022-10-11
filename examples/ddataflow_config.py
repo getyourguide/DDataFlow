@@ -12,10 +12,10 @@ config = {
     },
     # add here your writing logic
     "data_writers": {},
-    # this is the _name of the project to identify this project in the filesystem
+    # this is the name of the project to identify this project in the filesystem
     "project_folder_name": "ddataflow_demo",
     # to customize the location of your datasets
-    # "_snapshot_path": "dbfs:/another_databricks_path",
+    # "snapshot_path": "dbfs:/another_databricks_path",
     # to customize the size of your samples uncomment the line below
     # "data_source_size_limit_gb": 3
 }

@@ -38,11 +38,11 @@ class DDataflow:
     ):
         """
         Initialize the dataflow object.
-        The input of this object is the _config dictionary outlined in our integrator manual.
+        The input of this object is the config dictionary outlined in our integrator manual.
 
         Important params:
         project_folder_name:
-            the _name of the project that will be stored in the disk
+            the name of the project that will be stored in the disk
         snapshot_path:
             path to the snapshot folder
         data_source_size_limit_gb:
@@ -104,7 +104,7 @@ class DDataflow:
 
         1. MLTools must be called from withing the project root directory
         2. There must be a file called ddataflow_config.py there
-        3. the module must have defined DDataflow object with the _name of ddataflow
+        3. the module must have defined DDataflow object with the name of ddataflow
 
         @todo investigate if we can use import_class_from_string
         """
@@ -113,7 +113,7 @@ class DDataflow:
         CONFIGURATION_FILE_NAME = "ddataflow_config.py"
 
         current_folder = os.getcwd()
-        print("Loading _config from folder", current_folder)
+        print("Loading config from folder", current_folder)
         config_location = os.path.join(current_folder, CONFIGURATION_FILE_NAME)
 
         if not os.path.exists(config_location):
@@ -184,10 +184,10 @@ $ ddataflow setup_project"""
 
     def source_name(self, name, disable_view_creation=False):
         """
-        Given the _name of a production table, returns the _name of the corresponding ddataflow table when ddataflow is enabled
+        Given the name of a production table, returns the name of the corresponding ddataflow table when ddataflow is enabled
         If ddataflow is disabled get the production one.
         """
-        logger.info("Source _name used: ", name)
+        logger.info("Source name used: ", name)
         source_name = name
 
         if self._ddataflow_enabled:
@@ -195,7 +195,7 @@ $ ddataflow setup_project"""
             if disable_view_creation:
                 return source_name
 
-            print(f"Creating a temp view with the _name: {source_name}")
+            print(f"Creating a temp view with the name: {source_name}")
             data_source: DataSource = self._data_sources.get_data_source(name)
 
             if self._offline_enabled:

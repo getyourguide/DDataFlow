@@ -12,8 +12,6 @@ _config = {
     },
     # add here your writing logic
     "data_writers": {},
-    # this is the name of the project to identify this project in the filesystem
-    # do not use - minus - signs in the _name
     "project_folder_name": "my_project",
     # to customize the location of your datasets 
     # "snapshot_path": "dbfs:/another_databricks_path",
@@ -22,7 +20,7 @@ _config = {
 }
 
 # initialize the application and validate the configuration
-ddataflow = DDataflow(**_config)
+ddataflow = DDataflow(**config)
 """
 
     with open(config_file, "w") as f:

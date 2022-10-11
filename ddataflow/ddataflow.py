@@ -2,25 +2,26 @@ import logging as logger
 import os
 from typing import List, Optional, Union
 
-from ddataflow.data_source import DataSource, DataSources
+from ddataflow.data_source import DataSource
+from ddataflow.data_sources import DataSources
 from ddataflow.downloader import DataSourceDownloader
 from ddataflow.exceptions import WriterNotFoundException
-from ddataflow.sampler import DataSourceSampler
+from ddataflow.sampling.default import build_default_sampling_for_sources
+from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
 
 class DDataflow:
     """
-    DDataflow is our ML end2end tests solution.
+    DDataflow is an end2end tests solution.
     See our integrator manual for details.
     Additionally, use help(ddataflow) to see the available methods.
     """
 
-    _DBFS_BASE_SNAPSHOT_PATH = "dbfs:/ddataflow"
+    _DEFAULT_SNAPSHOT_BASE_PATH = "dbfs:/ddataflow"
     _LOCAL_BASE_SNAPSHOT_PATH = os.environ["HOME"] + "/.ddataflow"
     _ENABLE_DDATAFLOW_ENVVARIABLE = "ENABLE_DDATAFLOW"
     _ENABLE_OFFLINE_MODE_ENVVARIABLE = "ENABLE_OFFLINE_MODE"
-    _DEFAULT_SAMPLING_SIZE = 1000
     _DDATAFLOW_CONFIG_FILE = "ddataflow_config.py"
 
     _local_path: str
@@ -33,6 +34,7 @@ class DDataflow:
         data_source_size_limit_gb: int = 1,
         enable_ddataflow=False,
         sources_with_default_sampling: Optional[List[str]] = None,
+        snapshot_path: Optional[str] = None,
     ):
         """
         Initialize the dataflow object.
@@ -51,21 +53,24 @@ class DDataflow:
         self._size_limit = data_source_size_limit_gb
 
         self.project_folder_name = project_folder_name
-        self._dbfs_path = self._DBFS_BASE_SNAPSHOT_PATH + "/" + project_folder_name
+
+        base_path = snapshot_path if snapshot_path else self._DEFAULT_SNAPSHOT_BASE_PATH
+
+        self._snapshot_path = base_path + "/" + project_folder_name
         self._local_path = self._LOCAL_BASE_SNAPSHOT_PATH + "/" + project_folder_name
 
         if not data_sources:
             data_sources = {}
 
         all_data_sources = {
+            **build_default_sampling_for_sources(sources_with_default_sampling),
             **data_sources,
-            **self._build_default_sampling_for_sources(sources_with_default_sampling),
         }
 
         self._data_sources = DataSources(
             config=all_data_sources,
             local_folder=self._local_path,
-            snapshot_path=self._dbfs_path,
+            snapshot_path=self._snapshot_path,
             size_limit=self._size_limit,
         )
 
@@ -80,6 +85,10 @@ class DDataflow:
         # if offline is enabled we should use local data
         if self._offline_enabled:
             self.enable_offline()
+
+        self.save_sampled_data_sources = Sampler(
+            self._snapshot_path, self._data_sources
+        ).save_sampled_data_sources
 
     @staticmethod
     def setup_project():
@@ -123,7 +132,7 @@ $ ddataflow setup_project"""
             return ddataflow_config.ddataflow_client
 
         if not hasattr(ddataflow_config, "ddataflow"):
-            raise Exception("ddataflow object is not defined in your config file")
+            raise Exception("ddataflow object is not defined in your _config file")
 
         return ddataflow_config.ddataflow
 
@@ -137,24 +146,34 @@ $ ddataflow setup_project"""
         """
 
         self._ddataflow_enabled = True
-        self.printStatus()
+
+    def is_enabled(self):
+        return self._ddataflow_enabled
 
     def enable_offline(self):
         """Programatically enable offline mode"""
         self._offline_enabled = True
         self.enable()
 
+    def is_local(self):
+        return self._offline_enabled
+
+    def disable_offline(self):
+        """Programatically enable offline mode"""
+        self._offline_enabled = False
+
     def source(self, name: str, debugger=False):
         """
         Gives access to the data source configured in the dataflow
-        You can also use this function in the terminal with --debugger=True to inspect hte dataframe.
+
+        You can also use this function in the terminal with --debugger=True to inspect the dataframe.
         """
-        logger.info("Debugger enabled: ", debugger)
-        self.printStatus()
+        logger.info(f"Debugger enabled: {debugger}")
+        self.print_status()
 
         logger.info("Loading data source")
         data_source: DataSource = self._data_sources.get_data_source(name)
-        logger.info("Data source loaded")
+        logger.debug("Data source loaded")
         df = self._get_df_from_source(data_source)
 
         if debugger:
@@ -182,7 +201,7 @@ $ ddataflow setup_project"""
             if self._offline_enabled:
                 df = data_source.query_locally(self._get_spark())
             else:
-                df = data_source.query(self._get_spark())
+                df = data_source.query()
 
             df.createOrReplaceTempView(source_name)
 
@@ -219,7 +238,7 @@ $ ddataflow setup_project"""
         if not self._ddataflow_enabled:
             print("DDataflow not enabled")
             # goes directly to production without prefilters
-            return data_source.query_without_filter(self._get_spark())
+            return data_source.query_without_filter()
 
         if self._offline_enabled:
             # uses snapshot data
@@ -229,10 +248,10 @@ $ ddataflow setup_project"""
                     "without databricks connect in offline mode"
                 )
 
-            return data_source.query_locally(self._get_spark())
+            return data_source.query_locally()
 
         print("DDataflow enabled and filtering")
-        return data_source.query(self._get_spark())
+        return data_source.query()
 
     def download_data_sources(self, overwrite: bool = True, debug=False):
         """
@@ -253,16 +272,6 @@ $ ddataflow setup_project"""
         self.save_sampled_data_sources(ask_confirmation)
         self.download_data_sources(overwrite)
 
-    def save_sampled_data_sources(self, ask_confirmation=True):
-        """
-        Make a snapshot of the sampled data for later downloading
-        """
-        # @todo raise error if not setted up
-
-        return DataSourceSampler(self._DBFS_BASE_SNAPSHOT_PATH).sample_all(
-            self._data_sources, ask_confirmation
-        )
-
     def write(self, df, name: str):
         """
         Write a dataframe either to a local folder or the production one
@@ -271,14 +280,14 @@ $ ddataflow setup_project"""
             raise WriterNotFoundException(name)
 
         if self._ddataflow_enabled:
-            writing_path = self._dbfs_path
+            writing_path = self._snapshot_path
 
             if self._offline_enabled:
                 writing_path = self._local_path
             else:
-                if not writing_path.startswith(DDataflow._DBFS_BASE_SNAPSHOT_PATH):
+                if not writing_path.startswith(DDataflow._DEFAULT_SNAPSHOT_BASE_PATH):
                     raise Exception(
-                        f"Only writing to {DDataflow._DBFS_BASE_SNAPSHOT_PATH} is enabled"
+                        f"Only writing to {DDataflow._DEFAULT_SNAPSHOT_BASE_PATH} is enabled"
                     )
 
             writing_path = os.path.join(writing_path, name)
@@ -292,7 +301,7 @@ $ ddataflow setup_project"""
         """
         Read the data writers parquet file which are stored in the ddataflow folder
         """
-        path = self._dbfs_path
+        path = self._snapshot_path
         if self._offline_enabled:
             path = self._local_path
 
@@ -331,49 +340,36 @@ $ ddataflow setup_project"""
         return original_path
 
     def _get_overriden_arctifacts_current_path(self):
-        # return self.
-
         if self._offline_enabled:
             return self._local_path
 
         if self._ddataflow_enabled:
-            return self._dbfs_path
+            return self._snapshot_path
 
         return None
 
-    def printStatus(self):
+    def print_status(self):
         """
         Print the status of the ddataflow
         """
         if self._offline_enabled:
             print("DDataflow is now ENABLED in OFFLINE mode")
+            print("To disable it remove from your code or unset the enviroment variable 'unset ENABLE_DDATAFLOW ; unset ENABLE_OFFLINE_MODE'")
         elif self._ddataflow_enabled:
             print(
                 """
-DDataflow is now ENABLED in ONLINE mode. Filtered data will be used and it will write to temporary tables
+DDataflow is now ENABLED in ONLINE mode. Filtered data will be used and it will write to temporary tables.
 """
             )
         else:
             print(
                 f"""
 DDataflow is now DISABLED. So PRODUCTION data will be used and it will write to production tables.
-Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable
+Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable it.
+If you are working offline use export ENABLE_OFFLINE_MODE=True instead.
+
 """
             )
-
-    def _build_default_sampling_for_sources(self, sources=None):
-        """Setup standard filters for the entries that we do not specify them"""
-        result = {}
-        if not sources:
-            return result
-
-        for source in sources:
-            print("Build default sampling for source: " + source)
-            result[source] = {
-                "source": lambda spark: spark.table(source),
-                "filter": lambda df: df.limit(DDataflow._DEFAULT_SAMPLING_SIZE),
-            }
-        return result
 
     def _get_current_environment_data_folder(self) -> Optional[str]:
         if not self._ddataflow_enabled:
@@ -382,7 +378,7 @@ Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to ena
         if self._offline_enabled:
             return self._local_path
 
-        return self._dbfs_path
+        return self._snapshot_path
 
 
 def main():

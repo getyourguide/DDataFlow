@@ -1,18 +1,19 @@
+from pyspark.sql import SparkSession
+
+
 def get_or_create_spark():
-    from pyspark.sql import SparkSession
-
-    return SparkSession.builder.getOrCreate()
+    return SparkSingleton.get_instance()
 
 
-def estimate_spark_dataframe_size(spark_dataframe):
-    # @todo use spark official estimation function
-    # number Of gigabytes = M = (N*V*W) / 1024^3
-    average_variable_size_bytes = 50
-    return (
-        spark_dataframe.count()
-        * len(spark_dataframe.columns)
-        * average_variable_size_bytes
-    ) / (1024**3)
+class SparkSingleton:
+    spark = None
+
+    @staticmethod
+    def get_instance():
+        if SparkSingleton.spark is None:
+            SparkSingleton.spark = SparkSession.builder.getOrCreate()
+
+        return SparkSingleton.spark
 
 
 def summarize_spark_dataframe(spark_dataframe):

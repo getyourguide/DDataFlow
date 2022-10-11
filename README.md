@@ -1,6 +1,7 @@
 # DDataFlow
 
 DDataFlow is an end2end tests and local development solution for machine learning and data pipelines using pyspark.
+It samples the data as an approach to get slow pipelines run fast in the CI.
 
 ## Features
 
@@ -72,6 +73,7 @@ Note: the command **ddtaflow setup_project** creates a file like this for you.
 # filename: pipeline.py
 from pyspark.sql import SparkSession
 from ddataflow_config import ddataflow
+
 spark = SparkSession.builder.getOrCreate()
 
 # register the tables to mimick a real environment 
@@ -99,6 +101,11 @@ You will see that the dataframes are sampled when ddataflow is enabled and full 
 
 You completed the short demo!
 
+
 ## Support
 
 In case of questions feel free to reach out or create an issue.
+
+## Contributing
+
+This project requires manual release at the moment. See the docs and request a pypi access if you want to contribute.

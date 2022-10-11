@@ -1,7 +1,8 @@
 import logging as logger
 import os
 
-from ddataflow.data_source import DataSource, DataSources
+from ddataflow.data_source import DataSource
+from ddataflow.data_sources import DataSources
 
 
 class DataSourceDownloader:
@@ -47,8 +48,7 @@ class DataSourceDownloader:
             debug_str = "--debug"
 
         cmd = (
-            f'databricks fs cp {debug_str} -r "{data_source.get_dbfs_sample_path()}" {data_source.local_data_folder}/'
-            f"{data_source.get_name()}"
+            f'databricks fs cp {debug_str} -r "{data_source.get_dbfs_sample_path()}" "{data_source.get_local_path()}"'
         )
 
         logger.info(cmd)
@@ -57,8 +57,8 @@ class DataSourceDownloader:
         if result != 0:
             raise Exception(
                 f"""
-            Databricks cli failed!
-            Run it on your terminal to see the details:
+            Databricks cli failed! See error message above.
+            Also consider rerunning the download command in your terminal to see the results.
             {cmd}
             """
             )

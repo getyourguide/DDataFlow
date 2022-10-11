@@ -4,6 +4,5 @@ To release a new version you first need Pypi credentials. Talk to the core contr
 Perform the following commands:
 
 ```sh
-poetry build
-poetry publish
+poetry build && poetry publish
 ```

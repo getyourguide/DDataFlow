@@ -1,9 +1,11 @@
 import logging as logger
 import os
-from typing import Any, Dict, List
+
+from pyspark.sql import DataFrame
 
 from ddataflow.exceptions import BiggerThanMaxSize
-from ddataflow.utils import estimate_spark_dataframe_size, get_or_create_spark
+from ddataflow.sampling.default import filter_function
+from ddataflow.utils import get_or_create_spark
 
 
 class DataSource:
@@ -20,103 +22,113 @@ class DataSource:
         snapshot_path: str,
         size_limit,
     ):
-        self.name = name
-        self.config = config
-        self.local_data_folder = local_data_folder
-        self.snapshot_path = snapshot_path
+        self._name = name
+        self._local_data_folder = local_data_folder
+        self._snapshot_path = snapshot_path
         self._size_limit = size_limit
+        self._config = config
+        self._filter = None
+        self._source = None
 
-    def query(self, spark):
+        if "source" in self._config:
+            self._source = config["source"]
+        else:
+            if self._config.get("file-type") == "parquet":
+                self._source = lambda spark: spark.read.parquet(self._name)
+            else:
+                self._source = lambda spark: spark.table(self._name)
+
+        if "filter" in self._config:
+            self._filter = self._config["filter"]
+        else:
+            if self._config.get("default_sampling"):
+                self._filter = lambda df: filter_function(df)
+
+    def query(self):
         """
         query with filter unless none is present
         """
-        df = self.query_without_filter(spark)
+        df = self.query_without_filter()
 
-        if self.config.get("filter") is not None:
-            print(f"Filter set for {self.name}, applying it")
-            df = self.config["filter"](df)
+        if self._filter is not None:
+            print(f"Filter set for {self._name}, applying it")
+            df = self._filter(df)
         else:
-            print(f"No filter set for {self.name}")
+            print(f"No filter set for {self._name}")
 
         return df
 
-    def query_without_filter(self, spark):
-        logger.info(f"Querying without filter {self.name}")
-        return self.config["source"](spark)
+    def has_filter(self) -> bool:
+        return self._filter is not None
 
-    def query_locally(self, spark):
-        logger.info(f"Querying locally {self.name}")
-        df = spark.read.parquet(self.get_local_path())
+    def query_without_filter(self):
+        """
+        Go to the raw data source without any filtering
+        """
+        spark = get_or_create_spark()
+        logger.debug(f"Querying without filter source: '{self._name}'")
+        return self._source(spark)
+
+    def query_locally(self):
+        logger.info(f"Querying locally {self._name}")
+
+        path = self.get_local_path()
+        if not os.path.exists(path):
+            raise Exception(
+                f"""Data source '{self.get_name()}' does not have data in {path}.
+            Consider downloading using  the following command:
+            ddataflow current_project download_data_sources"""
+            )
+        spark = get_or_create_spark()
+        df = spark.read.parquet(path)
 
         return df
 
     def get_dbfs_sample_path(self) -> str:
-        return os.path.join(self.snapshot_path, self.get_name())
+        return os.path.join(self._snapshot_path, self._get_name_as_path())
 
     def get_local_path(self) -> str:
-        return os.path.join(self.local_data_folder, self.get_name())
+        return os.path.join(self._local_data_folder, self._get_name_as_path())
+
+    def _get_name_as_path(self):
+        """
+        converts the name when it has "/mnt/envents" in the name to a single file in a (flat structure) _mnt_events
+        """
+        return self.get_name().replace("/", "_")
 
     def get_name(self) -> str:
-        return self.name
+        return self._name
 
     def get_parquet_filename(self) -> str:
-        return self.name + ".parquet"
+        return self._name + ".parquet"
 
-    def estimate_size_and_fail_if_too_big(self, *, debug=False, return_dataset=False):
+    def estimate_size_and_fail_if_too_big(self):
         """
-        Estimate the size of the data source use the name used in the config
+        Estimate the size of the data source use the _name used in the _config
         It will throw an exception if the estimated size is bigger than the maximum allowed in the configuration
         """
 
-        spark = get_or_create_spark()
-        df = self.query(spark)
+        print("Estimating size of data source: ", self.get_name())
+        df = self.query()
         size_estimation = self._estimate_size(df)
 
         print("Estimated size of the Dataset in GB: ", size_estimation)
 
-        if debug:
-            breakpoint()
-
         if size_estimation > self._size_limit:
-            raise BiggerThanMaxSize(self.name, size_estimation, self._size_limit)
+            raise BiggerThanMaxSize(self._name, size_estimation, self._size_limit)
 
-        if return_dataset:
-            return df
+        return df
 
-    def _estimate_size(self, df):
-        return estimate_spark_dataframe_size(spark_dataframe=df)
+    def _estimate_size(self, df: DataFrame) -> float:
+        """
+        Estimates the size of a dataframe in Gigabytes
 
+        Formula:
+            number of gigabytes = (N*V*W) / 1024^3
+        """
 
-class DataSources:
-    """
-    Validates and Abstract the access to data sources
-    """
-
-    def __init__(
-        self, *, config, local_folder: str, snapshot_path: str, size_limit: int
-    ):
-        self.config = config
-        self.data_source: Dict[str, Any] = {}
-        self.download_folder = local_folder
-        for data_source_name, data_source_config in self.config.items():
-            self.data_source[data_source_name] = DataSource(
-                name=data_source_name,
-                config=data_source_config,
-                local_data_folder=local_folder,
-                snapshot_path=snapshot_path,
-                size_limit=size_limit,
-            )
-
-    def all_data_sources_names(self) -> List[str]:
-        return list(self.data_source.keys())
-
-    def get_data_source(self, name) -> DataSource:
-        if name not in self.data_source:
-            raise Exception(f"Data source does not exist {name}")
-        return self.data_source[name]
-
-    def get_filter(self, data_source_name: str):
-        return self.config[data_source_name]["query"]
-
-    def get_parquet_name(self, data_source_name: str):
-        return self.config[data_source_name]["parquet_name"]
+        print(f"Amount of rows in dataframe to estimate size: {df.count()}")
+        average_variable_size_bytes = 50
+        return (df.count() * len(df.columns) * average_variable_size_bytes) / (
+            1024**3
+        )

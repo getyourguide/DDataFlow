@@ -1,6 +1,17 @@
+# 1.1.2  - 2022-10-05
+
+- is_local api added
+
+# 1.1.0  - 2022-09-30
+
+- Support default sampling enablement in the sources configuration
+  - Use default_sample: True
+- Support omitting the source name in the sources configuration
+  - When omitted assumes table and uses the source key as the table name
 
 # 1.0.2  - 2022-09-29
-- Loosen up dependenceis 
+
+- Loosen up dependenceis
 
 # 1.0.1  - 2022-09-06
 

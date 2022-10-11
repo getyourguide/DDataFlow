@@ -1,3 +1,8 @@
+# 1.1.3  - 2022-10-11
+
+- is_enabled api added
+- add documentation website
+
 # 1.1.2  - 2022-10-05
 
 - is_local api added
@@ -11,7 +16,7 @@
 
 # 1.0.2  - 2022-09-29
 
-- Loosen up dependenceis
+- Loosen up dependencies
 
 # 1.0.1  - 2022-09-06
 

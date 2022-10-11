@@ -348,6 +348,12 @@ $ ddataflow setup_project"""
 
         return None
 
+    def is_enabled(self):
+        """
+        To be enabled ddataflow has to be either in offline mode or with enable=True
+        """
+        return self._offline_enabled or self._ddataflow_enabled
+
     def print_status(self):
         """
         Print the status of the ddataflow

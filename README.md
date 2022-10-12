@@ -16,48 +16,37 @@ Enables to run on the pipelines in the CI
 ## 1. Install Ddataflow
 
 ```sh
-pip install ddataflow
+pip install ddataflow 
 ```
+
+`ddataflow --help` will give you an overview of the available commands.
+
 
 # Getting Started (<5min Tutorial)
 
 This tutorial aims to show you the core features though, for the complete reference see the [integration manual](docs/integrator_manual.md) in the docs.
 
-## 1. Create some synthetic data
+## 1. Setup some synthetic data
 
-```py
-# create a script  called create_syntetic_data.py and place the following code in it
-from random import randrange
-from pyspark.sql.session import SparkSession
-spark = SparkSession.builder.getOrCreate()
-
-locations = [
-    {"location_id": i, "location_name": f"Location {i}"} for i in range(2000)
-]
-
-spark.createDataFrame(locations).write.parquet("/tmp/demo_locations.parquet")
-
-tours = [
-    {"tour_id": i, "tour_name": f"Tour {i}", "location_id": randrange(1000)} for i in range(50000)
-]
-spark.createDataFrame(tours).write.parquet("/tmp/demo_tours.parquet")
-```
-
-And run it **python create_syntetic_data.py**
+See the [examples folder](examples/pipeline.py).
 
 ## 2. Create a ddataflow_config.py file
+
+The command `ddtaflow setup_project` creates a file like this for you.
 
 ```py
 from ddataflow import DDataflow
 
 config = {
-    # add here tables or paths to data sources with default sampling
-    "sources_with_default_sampling": ['demo_locations'],
     # add here your tables or paths with customized sampling logic
     "data_sources": {
         "demo_tours": {
             "source": lambda spark: spark.table('demo_tours'),
             "filter": lambda df: df.limit(500)
+        }
+        "demo_tours": {
+            "source": lambda spark: spark.table('demo_locations'),
+            "default_sampling": True,
         }
     },
     "project_folder_name": "ddataflow_demo",
@@ -67,9 +56,7 @@ config = {
 ddataflow = DDataflow(**config)
 ```
 
-Note: the command **ddtaflow setup_project** creates a file like this for you.
-
-## 3. Create an example pipeline
+## 3. Use ddataflow in a pipeline
 
 ```py
 # filename: pipeline.py
@@ -95,9 +82,9 @@ print({
 ```
 
 Now run it twice and observe the difference in the amount of records:
-**python pipeline.py**
+`python pipeline.py`
 
-**ENABLE_DDATAFLOW=True python pipeline.py**
+`ENABLE_DDATAFLOW=True python pipeline.py`
 
 You will see that the dataframes are sampled when ddataflow is enabled and full when the tool is disabled.
 

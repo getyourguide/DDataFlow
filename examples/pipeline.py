@@ -46,7 +46,7 @@ def pipeline():
     }
 
 def run_scenarios():
-    #create_data()
+    create_data()
     ddataflow.disable()
     result = pipeline()
     assert result["total_tours"] == 50000

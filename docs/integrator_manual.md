@@ -54,16 +54,6 @@ config = {
 ddataflow_client = DDataflow(**config)
 ```
 
-## Estimating your data size
-
-Use the estimate_source_size function to narrow down the size of your dataset by changing the filter options until you are
-satisfied with the result.
-
-```sh
-ddataflow_client.estimate_source_size('ActivityCardImpression')
-#Estimated size of the Dataset in GB:  1.2867986224591732
-```
-
 ## Replace the sources
 
 Replace in your code the calls to the original data sources for the ones provided by ddataflow.
@@ -85,7 +75,7 @@ ddataflow_client.source("ActivityCardImpression")
 Its not a problem if you dont map all data sources if you dont map one it will keep going to production tables and
 might be slower. From this point you can use dddataflow to run your pipelines on the sample data instead of the full data.
 
-**Note: BY DEFUAULT ddataflow is DISABLED, so the calls will attempt to go to production, which if done wrong can
+**Note: BY DEFAULT ddataflow is DISABLED, so the calls will attempt to go to production, which if done wrong can
 lead to writing trash data**.
 
 To enable DDataFlow you can either export an environment variable without changing the code.

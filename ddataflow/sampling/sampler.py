@@ -31,7 +31,9 @@ class Sampler:
         """
         self._dry_run = dry_run
         if self._dry_run:
-            print("Dry run enabled, no data will be written. Use dry_run=False to actually perform the operation.")
+            print(
+                "Dry run enabled, no data will be written. Use dry_run=False to actually perform the operation."
+            )
 
         if sample_only is not None:
             print(f"Sampling only the following data sources: {sample_only}")

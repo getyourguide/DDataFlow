@@ -27,3 +27,5 @@ Cell 2
 from ddataflow_config import ddataflow
 ddataflow.save_sampled_data_sources()
 ```
+
+Then use dry_run=False when you are ready to copy.

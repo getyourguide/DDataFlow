@@ -47,9 +47,7 @@ class DataSourceDownloader:
         if debug:
             debug_str = "--debug"
 
-        cmd = (
-            f'databricks fs cp {debug_str} -r "{data_source.get_dbfs_sample_path()}" "{data_source.get_local_path()}"'
-        )
+        cmd = f'databricks fs cp {debug_str} -r "{data_source.get_dbfs_sample_path()}" "{data_source.get_local_path()}"'
 
         logger.info(cmd)
         result = os.system(cmd)

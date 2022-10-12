@@ -3,8 +3,13 @@ from typing import List, Optional
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
+from dataclasses import dataclass
 
-DEFAULT_SAMPLING_SIZE = 1000
+DEFAULT_SAMPLING_SIZE = 100000
+
+@dataclass
+class DefaultSamplerParameters:
+    custom_limit: Optional[int] = None
 
 
 def sample_by_yesterday(df: DataFrame) -> DataFrame:

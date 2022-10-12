@@ -1,7 +1,7 @@
 # This file is aimed to consolidate the learnings of running spark on the local machine
 
 
-## Example local setup
+## Example local setup with most common problems solved
 
 ```py
 def configure_spark():
@@ -12,6 +12,7 @@ def configure_spark():
         spark_conf = pyspark.SparkConf()
         spark_conf.set("spark.sql.warehouse.dir", "/tmp")
         spark_conf.set("spark.sql.catalogImplementation", "hive")
+        spark_conf.set("spark.driver.memory", "15g")
         spark_conf.setMaster("local[*]")
         sc = pyspark.SparkContext(conf=spark_conf)
         session = pyspark.sql.SparkSession(sc)

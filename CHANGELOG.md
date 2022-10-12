@@ -1,3 +1,7 @@
+# 1.1.4  - 2022-10-11
+
+- improved initial project config
+ 
 # 1.1.3  - 2022-10-11
 
 - is_enabled api added

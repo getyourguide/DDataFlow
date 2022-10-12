@@ -14,7 +14,7 @@ from ddataflow.utils import get_or_create_spark, using_databricks_connect
 class DDataflow:
     """
     DDataflow is an end2end tests solution.
-    See our integrator manual for details.
+    See our docs manual for more details.
     Additionally, use help(ddataflow) to see the available methods.
     """
 
@@ -92,9 +92,11 @@ class DDataflow:
 
     @staticmethod
     def setup_project():
-        from ddataflow.setup_project import setup_project
-
-        setup_project(DDataflow._DDATAFLOW_CONFIG_FILE)
+        """
+        Sets up a new ddataflow project with empty data sources in the current directory
+        """
+        from ddataflow.setup.setup_project import setup_project
+        setup_project()
 
     @staticmethod
     def current_project() -> "DDataflow":
@@ -211,7 +213,7 @@ $ ddataflow setup_project"""
 
     def path(self, path):
         """
-        returns a deterministic path replacing the real production path with one based on teh current environment needs
+        returns a deterministic path replacing the real production path with one based on the current environment needs
         """
         if not self._ddataflow_enabled:
             return path
@@ -360,7 +362,9 @@ $ ddataflow setup_project"""
         """
         if self._offline_enabled:
             print("DDataflow is now ENABLED in OFFLINE mode")
-            print("To disable it remove from your code or unset the enviroment variable 'unset ENABLE_DDATAFLOW ; unset ENABLE_OFFLINE_MODE'")
+            print(
+                "To disable it remove from your code or unset the enviroment variable 'unset ENABLE_DDATAFLOW ; unset ENABLE_OFFLINE_MODE'"
+            )
         elif self._ddataflow_enabled:
             print(
                 """

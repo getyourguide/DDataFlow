@@ -1,8 +1,7 @@
 import os
-
-from ddataflow_config import ddataflow
 from random import randrange
 
+from ddataflow_config import ddataflow
 from pyspark.sql.session import SparkSession
 
 spark = SparkSession.builder.getOrCreate()
@@ -45,6 +44,7 @@ def pipeline():
         "total_tours": total_tours,
     }
 
+
 def run_scenarios():
     create_data()
     ddataflow.disable()
@@ -57,9 +57,7 @@ def run_scenarios():
     assert result["total_tours"] == 500
 
 
-
-
 if __name__ == "__main__":
     import fire
-    fire.Fire()
 
+    fire.Fire()

@@ -19,8 +19,10 @@ config = {
         #    "default_sampling": True,
         #},
     },
-    #"default_sampling": {
-    #    "sample_size_limit": 100000,
+    #"default_sampler": {
+    #    # defines the amount of rows retrieved with the default sampler, used as .limit(limit) in the dataframe
+    #    # default = 10000
+    #    "limit": 100000,
     #},
     # to customize the max size of your examples uncomment the line below
     # "data_source_size_limit_gb": 3

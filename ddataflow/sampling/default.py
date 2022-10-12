@@ -5,11 +5,29 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 from dataclasses import dataclass
 
-DEFAULT_SAMPLING_SIZE = 100000
 
 @dataclass
-class DefaultSamplerParameters:
-    custom_limit: Optional[int] = None
+class DefaultSamplerOptions:
+    """
+    Options to customize the default sampler
+    """
+
+    limit: Optional[int] = 100000
+
+    _instance = None
+
+    @staticmethod
+    def set(data: dict):
+        DefaultSamplerOptions._instance = DefaultSamplerOptions(**data)
+
+        return DefaultSamplerOptions._instance
+
+    @staticmethod
+    def get_instance():
+        if not DefaultSamplerOptions._instance:
+            DefaultSamplerOptions._instance = DefaultSamplerOptions()
+
+        return DefaultSamplerOptions._instance
 
 
 def sample_by_yesterday(df: DataFrame) -> DataFrame:
@@ -33,7 +51,7 @@ def filter_function(df: DataFrame) -> DataFrame:
     :return:
     """
     df = sample_by_yesterday(df)
-    df = df.limit(DEFAULT_SAMPLING_SIZE)
+    df = df.limit(DefaultSamplerOptions.get_instance().limit)
 
     return df
 

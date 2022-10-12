@@ -6,10 +6,9 @@ from ddataflow.data_source import DataSource
 from ddataflow.data_sources import DataSources
 from ddataflow.downloader import DataSourceDownloader
 from ddataflow.exceptions import WriterNotFoundException
-from ddataflow.sampling.default import build_default_sampling_for_sources
+from ddataflow.sampling.default import build_default_sampling_for_sources, DefaultSamplerOptions
 from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
-
 
 class DDataflow:
     """
@@ -35,6 +34,7 @@ class DDataflow:
         enable_ddataflow=False,
         sources_with_default_sampling: Optional[List[str]] = None,
         snapshot_path: Optional[str] = None,
+        default_sampler: Optional[dict] = None,
     ):
         """
         Initialize the dataflow object.
@@ -47,7 +47,12 @@ class DDataflow:
             path to the snapshot folder
         data_source_size_limit_gb:
             limit the size of the data sources
+        default_sampler:
+         options to pass to the default sampler
         sources_with_default_sampling:
+         if you have tables you want to have by default and dont want to sample them first
+        sources_with_default_sampling :
+         Deprecated: use sources with default_sampling=True instead
          if you have tables you want to have by default and dont want to sample them first
         """
         self._size_limit = data_source_size_limit_gb
@@ -58,6 +63,11 @@ class DDataflow:
 
         self._snapshot_path = base_path + "/" + project_folder_name
         self._local_path = self._LOCAL_BASE_SNAPSHOT_PATH + "/" + project_folder_name
+
+
+        if default_sampler:
+            # set this before creating data sources
+            DefaultSamplerOptions.set(default_sampler)
 
         if not data_sources:
             data_sources = {}
@@ -73,6 +83,7 @@ class DDataflow:
             snapshot_path=self._snapshot_path,
             size_limit=self._size_limit,
         )
+
 
         self._data_writers: dict = data_writers if data_writers else {}
 

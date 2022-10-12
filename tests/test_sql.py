@@ -1,20 +1,21 @@
-import pytest
 from pyspark.sql.session import SparkSession
 
 from ddataflow import DDataflow
-from ddataflow.utils import using_databricks_connect
 
 
-@pytest.mark.skipif(
-    not using_databricks_connect(), reason="needs databricks connect to work"
-)
 def test_sql():
-    """Run this with db-connect"""
     spark = SparkSession.builder.getOrCreate()
 
     config = {
-        "sources_with_default_sampling": ["location"],
         "project_folder_name": "unit_tests",
+        "data_sources": {
+            "location": {
+                'default_sampling': True
+            }
+        },
+        'default_sampler': {
+            'limit': 2
+        }
     }
     ddataflow = DDataflow(**config)
 
@@ -22,14 +23,17 @@ def test_sql():
         from {ddataflow.source_name('location')}
     """
 
+    ddataflow.disable()
     result = spark.sql(query)
     # default amount of tours
-    assert result.collect()[0].total > 10000
+    assert result.collect()[0].total == 3
 
     ddataflow.enable()
+    query = f""" select count(1) as total
+        from {ddataflow.source_name('location')}
+    """
     result = spark.sql(query)
-    # defaults to 1000
-    assert result.collect()[0].total == 1000
+    assert result.collect()[0].total == 2
 
 
 if __name__ == "__main__":

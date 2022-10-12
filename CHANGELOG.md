@@ -1,3 +1,8 @@
+
+# 1.1.5  - 2022-10-12
+
+- Allow customization of default sampler limit
+
 # 1.1.4  - 2022-10-11
 
 - improved initial project config

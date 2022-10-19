@@ -1,4 +1,8 @@
 
+# 1.1.6 
+
+- Security dependency fix
+
 # 1.1.5  - 2022-10-12
 
 - Allow customization of default sampler limit

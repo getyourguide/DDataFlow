@@ -1,4 +1,8 @@
 
+# 1.1.7
+
+- Fix bug in source_name.
+
 # 1.1.6 
 
 - Security dependency fix

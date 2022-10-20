@@ -212,7 +212,7 @@ $ ddataflow setup_project"""
             data_source: DataSource = self._data_sources.get_data_source(name)
 
             if self._offline_enabled:
-                df = data_source.query_locally(self._get_spark())
+                df = data_source.query_locally()
             else:
                 df = data_source.query()
 

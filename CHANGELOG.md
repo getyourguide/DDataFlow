@@ -1,3 +1,6 @@
+# 1.1.8
+
+- Release new version with security patch on urllib
 
 # 1.1.7
 

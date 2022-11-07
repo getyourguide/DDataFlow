@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "DDataFlow"
-version = "1.1.8"
+version = "1.1.9"
 description = "A tool for end2end data tests"
 authors = ["Data products GYG <engineering.data-products@getyourguide.com>"]
 
@@ -12,7 +12,7 @@ fire = ">=0.4"
 # this is not a direct dependency of the template, but a dependency of databricks-cli
 # that comes from mlflow, if we dont pin it here we get a lower version that has a security problem
 oauthlib = ">=3.2.1"
-urllib3 = ">=1.23"
+urllib3 = ">=1.24.2"
 
 [tool.poetry.scripts]
 ddataflow = 'ddataflow.ddataflow:main'

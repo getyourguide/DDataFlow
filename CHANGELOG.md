@@ -1,3 +1,7 @@
+# 1.1.9
+
+- Upgrade dependencies due to security
+ 
 # 1.1.8
 
 - Release new version with security patch on urllib

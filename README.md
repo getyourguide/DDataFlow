@@ -95,6 +95,8 @@ You completed the short demo!
 
 In case of questions feel free to reach out or create an issue.
 
+Check out our [FAQ in case of problems](docs/FAQ)
+
 ## Contributing
 
 This project requires manual release at the moment. See the docs and request a pypi access if you want to contribute.

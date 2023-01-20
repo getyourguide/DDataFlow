@@ -95,7 +95,7 @@ You completed the short demo!
 
 In case of questions feel free to reach out or create an issue.
 
-Check out our [FAQ in case of problems](docs/FAQ)
+Check out our [FAQ in case of problems](https://github.com/getyourguide/DDataFlow/blob/main/docs/FAQ.md)
 
 ## Contributing
 

@@ -6,7 +6,7 @@
  After installing ddataflow run the configure producedure in your installed machine
  
  ```
- databricks configure
+ databricks configure --token
  ```
  
  Follow the wizard until the end.

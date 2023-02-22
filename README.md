@@ -94,7 +94,7 @@ You completed the short demo!
 
 The recommended approach to use ddataflow is to use the offline mode, which allows you to test your pipelines without the need for an active cluster. This is especially important for development and debugging purposes, as it allows you to quickly test and identify any issues with your pipelines.
 
-Alternatively, you can use Databricks Connect to test your pipelines on an active cluster. However, our experience with this approach has not been great, memory issues is common and there is the risk of overriding prod. data, so we recommend using the offline mode instead.
+Alternatively, you can use Databricks Connect to test your pipelines on an active cluster. However, our experience with this approach has not been great, memory issues are common and there is the risk of overriding production data, so we recommend using the offline mode instead.
 
 If you have any questions or need any help, please don't hesitate to reach out. We are here to help you get the most out of ddataflow.
 

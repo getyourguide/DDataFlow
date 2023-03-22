@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "DDataFlow"
-version = "1.1.9"
+version = "1.1.10"
 description = "A tool for end2end data tests"
 authors = ["Data products GYG <engineering.data-products@getyourguide.com>"]
+readme = "README.md"
+repository = "https://github.com/getyourguide/DDataFlow"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
@@ -18,7 +20,7 @@ urllib3 = ">=1.24.2"
 ddataflow = 'ddataflow.ddataflow:main'
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^6.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

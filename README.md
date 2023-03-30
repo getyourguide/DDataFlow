@@ -8,7 +8,7 @@ You can find our documentation in the [docs folder](https://github.com/getyourgu
 ## Features
 
 - Read a subset of our data so to speed up the running of the pipelines during tests
-- Write to a test location our artifacts  so you don't pollute production
+- Write to a test location our artifacts so you don't pollute production
 - Download data for enabling local machine development
 
 Enables to run on the pipelines in the CI

@@ -224,14 +224,17 @@ $ ddataflow setup_project"""
 
     def path(self, path):
         """
-        returns a deterministic path replacing the real production path with one based on the current environment needs
+        returns a deterministic path replacing the real production path with one based on the current environment needs.
+        Currently support path start with 'dbfs:/' and 's3://'.
         """
         if not self._ddataflow_enabled:
             return path
 
         base_path = self._get_current_environment_data_folder()
 
-        return base_path + "/" + path.replace("dbfs:/", "")
+        for path_prefix in ["dbfs:/", "s3://"]:
+            path = path.replace(path_prefix, "")
+        return base_path + "/" + path
 
     def _get_new_table_name(self, name) -> str:
         overriden_name = name.replace("dwh.", "")

@@ -1,4 +1,4 @@
-import logging as logger
+import logging
 import os
 from typing import List, Optional, Union
 
@@ -9,6 +9,9 @@ from ddataflow.exceptions import WriterNotFoundException
 from ddataflow.sampling.default import build_default_sampling_for_sources, DefaultSamplerOptions
 from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
+
+logger = logging.getLogger(__name__)
+
 
 class DDataflow:
     """

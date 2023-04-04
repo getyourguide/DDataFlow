@@ -10,6 +10,7 @@ from ddataflow.sampling.default import build_default_sampling_for_sources, Defau
 from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
+
 class DDataflow:
     """
     DDataflow is an end2end tests solution.
@@ -225,7 +226,7 @@ $ ddataflow setup_project"""
     def path(self, path):
         """
         returns a deterministic path replacing the real production path with one based on the current environment needs.
-        Currently support path start with 'dbfs:/' and 's3://'.
+        Currently support path starts with 'dbfs:/' and 's3://'.
         """
         if not self._ddataflow_enabled:
             return path
@@ -234,7 +235,22 @@ $ ddataflow setup_project"""
 
         for path_prefix in ["dbfs:/", "s3://"]:
             path = path.replace(path_prefix, "")
+
         return base_path + "/" + path
+
+    def set_up_database(self, db_name: str, spark):
+        """
+        Perform USE $DATABASE query to set up a default database.
+        If ddataflow is enabled, use a test db to prevent writing data into production.
+        """
+        if self._ddataflow_enabled:
+            db_name = f"ddataflow_{db_name}"
+        # create db if not exist
+        sql = "CREATE DATABASE IF NOT EXISTS {0}".format(db_name)
+        spark.sql(sql)
+        # set default db
+        spark.sql("USE {}".format(db_name))
+        logger.warning(f"The default database is now set to {db_name}")
 
     def _get_new_table_name(self, name) -> str:
         overriden_name = name.replace("dwh.", "")

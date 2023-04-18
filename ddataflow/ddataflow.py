@@ -10,6 +10,7 @@ from ddataflow.sampling.default import build_default_sampling_for_sources, Defau
 from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
+
 class DDataflow:
     """
     DDataflow is an end2end tests solution.
@@ -35,6 +36,7 @@ class DDataflow:
         sources_with_default_sampling: Optional[List[str]] = None,
         snapshot_path: Optional[str] = None,
         default_sampler: Optional[dict] = None,
+        default_database: Optional[str] = None,
     ):
         """
         Initialize the dataflow object.
@@ -51,6 +53,8 @@ class DDataflow:
          options to pass to the default sampler
         sources_with_default_sampling:
          if you have tables you want to have by default and dont want to sample them first
+        default_database:
+            name of the default database. If ddataflow is enabled, a test db will be created and used.
         sources_with_default_sampling :
          Deprecated: use sources with default_sampling=True instead
          if you have tables you want to have by default and dont want to sample them first
@@ -100,6 +104,9 @@ class DDataflow:
         self.save_sampled_data_sources = Sampler(
             self._snapshot_path, self._data_sources
         ).save_sampled_data_sources
+
+        if default_database:
+            self.set_up_database(default_database)
 
     @staticmethod
     def setup_project():
@@ -224,14 +231,35 @@ $ ddataflow setup_project"""
 
     def path(self, path):
         """
-        returns a deterministic path replacing the real production path with one based on the current environment needs
+        returns a deterministic path replacing the real production path with one based on the current environment needs.
+        Currently support path starts with 'dbfs:/' and 's3://'.
         """
         if not self._ddataflow_enabled:
             return path
 
         base_path = self._get_current_environment_data_folder()
 
-        return base_path + "/" + path.replace("dbfs:/", "")
+        for path_prefix in ["dbfs:/", "s3://"]:
+            path = path.replace(path_prefix, "")
+
+        return base_path + "/" + path
+
+    def set_up_database(self, db_name: str):
+        """
+        Perform USE $DATABASE query to set up a default database.
+        If ddataflow is enabled, use a test db to prevent writing data into production.
+        """
+        # rename database if ddataflow is enabled
+        if self._ddataflow_enabled:
+            db_name = f"ddataflow_{db_name}"
+        # get spark
+        spark = self._get_spark()
+        # create db if not exist
+        sql = "CREATE DATABASE IF NOT EXISTS {0}".format(db_name)
+        spark.sql(sql)
+        # set default db
+        spark.sql("USE {}".format(db_name))
+        logger.warning(f"The default database is now set to {db_name}")
 
     def _get_new_table_name(self, name) -> str:
         overriden_name = name.replace("dwh.", "")

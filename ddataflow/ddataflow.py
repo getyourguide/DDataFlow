@@ -11,6 +11,8 @@ from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
 logger = logging.getLogger(__name__)
+console = logging.StreamHandler()
+logger.addHandler(console)
 
 
 class DDataflow:
@@ -110,6 +112,13 @@ class DDataflow:
         if default_database:
             self.set_up_database(default_database)
 
+        # Print detailed logs when ddataflow is enabled
+        if self._ddataflow_enabled:
+            self.set_logger_level(logging.DEBUG)
+        else:
+            logger.info("DDataflow is now DISABLED."
+                        "PRODUCTION data will be used and it will write to production tables.")
+
     @staticmethod
     def setup_project():
         """
@@ -135,7 +144,7 @@ class DDataflow:
         CONFIGURATION_FILE_NAME = "ddataflow_config.py"
 
         current_folder = os.getcwd()
-        print("Loading config from folder", current_folder)
+        logger.info("Loading config from folder", current_folder)
         config_location = os.path.join(current_folder, CONFIGURATION_FILE_NAME)
 
         if not os.path.exists(config_location):
@@ -190,16 +199,16 @@ $ ddataflow setup_project"""
 
         You can also use this function in the terminal with --debugger=True to inspect the dataframe.
         """
-        logger.info(f"Debugger enabled: {debugger}")
         self.print_status()
 
-        logger.info("Loading data source")
+        logger.debug("Loading data source")
         data_source: DataSource = self._data_sources.get_data_source(name)
         logger.debug("Data source loaded")
         df = self._get_df_from_source(data_source)
 
         if debugger:
-            logger.info("In debug mode now, use query to inspect it")
+            logger.debug(f"Debugger enabled: {debugger}")
+            logger.debug("In debug mode now, use query to inspect it")
             breakpoint()
 
         return df
@@ -209,7 +218,7 @@ $ ddataflow setup_project"""
         Given the name of a production table, returns the name of the corresponding ddataflow table when ddataflow is enabled
         If ddataflow is disabled get the production one.
         """
-        logger.info("Source name used: ", name)
+        logger.debug("Source name used: ", name)
         source_name = name
 
         if self._ddataflow_enabled:
@@ -217,7 +226,7 @@ $ ddataflow setup_project"""
             if disable_view_creation:
                 return source_name
 
-            print(f"Creating a temp view with the name: {source_name}")
+            logger.debug(f"Creating a temp view with the name: {source_name}")
             data_source: DataSource = self._data_sources.get_data_source(name)
 
             if self._offline_enabled:
@@ -279,21 +288,21 @@ $ ddataflow setup_project"""
 
     def _get_df_from_source(self, data_source):
         if not self._ddataflow_enabled:
-            print("DDataflow not enabled")
+            logger.debug("DDataflow not enabled")
             # goes directly to production without prefilters
             return data_source.query_without_filter()
 
         if self._offline_enabled:
             # uses snapshot data
             if using_databricks_connect():
-                print(
+                logger.debug(
                     "Looks like you are using databricks-connect in offline mode. You probably want to run it "
                     "without databricks connect in offline mode"
                 )
 
             return data_source.query_locally()
 
-        print("DDataflow enabled and filtering")
+        logger.debug("DDataflow enabled and filtering")
         return data_source.query()
 
     def download_data_sources(self, overwrite: bool = True, debug=False):
@@ -402,24 +411,23 @@ $ ddataflow setup_project"""
         Print the status of the ddataflow
         """
         if self._offline_enabled:
-            print("DDataflow is now ENABLED in OFFLINE mode")
-            print(
+            logger.debug("DDataflow is now ENABLED in OFFLINE mode")
+            logger.debug(
                 "To disable it remove from your code or unset the enviroment variable 'unset ENABLE_DDATAFLOW ; unset ENABLE_OFFLINE_MODE'"
             )
         elif self._ddataflow_enabled:
-            print(
+            logger.debug(
                 """
-DDataflow is now ENABLED in ONLINE mode. Filtered data will be used and it will write to temporary tables.
-"""
+                DDataflow is now ENABLED in ONLINE mode. Filtered data will be used and it will write to temporary tables.
+                """
             )
         else:
-            print(
+            logger.debug(
                 f"""
-DDataflow is now DISABLED. So PRODUCTION data will be used and it will write to production tables.
-Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable it.
-If you are working offline use export ENABLE_OFFLINE_MODE=True instead.
-
-"""
+                DDataflow is now DISABLED.
+                Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable it.
+                If you are working offline use export ENABLE_OFFLINE_MODE=True instead.
+                """
             )
 
     def _get_current_environment_data_folder(self) -> Optional[str]:
@@ -430,6 +438,14 @@ If you are working offline use export ENABLE_OFFLINE_MODE=True instead.
             return self._local_path
 
         return self._snapshot_path
+
+    def set_logger_level(self, level):
+        """
+        Set logger level.
+        Levels can be found here: https://docs.python.org/3/library/logging.html#logging-levels
+        """
+        logger.info(f"Set logger level to: {level}")
+        logger.setLevel(level)
 
 
 def main():

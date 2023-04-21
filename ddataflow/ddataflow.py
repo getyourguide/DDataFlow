@@ -11,8 +11,8 @@ from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
 
 logger = logging.getLogger(__name__)
-console = logging.StreamHandler()
-logger.addHandler(console)
+handler = logging.StreamHandler()
+logger.addHandler(handler)
 
 
 class DDataflow:

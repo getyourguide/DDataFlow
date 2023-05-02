@@ -310,7 +310,7 @@ $ ddataflow setup_project"""
         """
         Create a sample folder in dbfs and then downloads it in the local machine
         """
-        self.save_sampled_data_sources(ask_confirmation)
+        self.save_sampled_data_sources(dry_run=False, ask_confirmation=ask_confirmation)
         self.download_data_sources(overwrite)
 
     def write(self, df, name: str):

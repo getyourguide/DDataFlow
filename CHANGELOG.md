@@ -1,6 +1,10 @@
-# 1.1.14
+# 1.1.15
 
 - Disable logs when DDataflow is not enable. Support setting logger level.
+
+# 1.1.14
+
+- Fix sample and download function
 
 # 1.1.13
 

@@ -144,7 +144,7 @@ class DDataflow:
         CONFIGURATION_FILE_NAME = "ddataflow_config.py"
 
         current_folder = os.getcwd()
-        logger.info("Loading config from folder", current_folder)
+        logger.debug("Loading config from folder", current_folder)
         config_location = os.path.join(current_folder, CONFIGURATION_FILE_NAME)
 
         if not os.path.exists(config_location):
@@ -424,7 +424,7 @@ $ ddataflow setup_project"""
         else:
             logger.debug(
                 f"""
-                DDataflow is now DISABLED.
+                DDataflow is now DISABLED. So PRODUCTION data will be used and it will write to production tables.
                 Use enable() function or export {self._ENABLE_DDATAFLOW_ENVVARIABLE}=True to enable it.
                 If you are working offline use export ENABLE_OFFLINE_MODE=True instead.
                 """

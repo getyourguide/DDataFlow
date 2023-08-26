@@ -3,6 +3,8 @@
 DDataFlow is an end2end tests and local development solution for machine learning and data pipelines using pyspark.
 It samples the data as an approach to get slow pipelines run fast in the CI.
 
+![ddataflow overview](ddataflow.png)
+
 You can find our documentation in the [docs folder](https://github.com/getyourguide/DDataFlow/tree/main/docs). And see the complete code reference [here](https://code.getyourguide.com/DDataFlow/ddataflow/ddataflow.html).
 
 ## Features

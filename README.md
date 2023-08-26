@@ -61,26 +61,12 @@ ddataflow = DDataflow(**config)
 ## 3. Use ddataflow in a pipeline
 
 ```py
-# filename: pipeline.py
-from pyspark.sql import SparkSession
 from ddataflow_config import ddataflow
 
-spark = SparkSession.builder.getOrCreate()
-
-# register the tables to mimick a real environment 
-# when you use ddatflow for real you will have your production tables in place already
-spark.read.parquet("/tmp/demo_locations.parquet").registerTempTable("demo_locations")
-spark.read.parquet("/tmp/demo_tours.parquet").registerTempTable("demo_tours")
-
-# pyspark code using a different source name
-total_locations = spark.table(ddataflow.name('demo_locations')).count()
-# sql code also works
-total_tours = spark.sql(f""" SELECT COUNT(1) from {ddataflow.name('demo_tours')}""").collect()[0]['count(1)']
-print("Totals follow below:")
-print({
-    "total_locations": total_locations,
-    "total_tours": total_tours,
-})
+# replace spark.table for ddataflow source will return a spark dataframe
+print(ddataflow.source('demo_locations').count())
+# for sql queries replace only the name of the table for the sample data source name provided by ddataflow
+print(spark.sql(f""" SELECT COUNT(1) from {ddataflow.name('demo_tours')}""").collect()[0]['count(1)'])
 ```
 
 Now run it twice and observe the difference in the amount of records:

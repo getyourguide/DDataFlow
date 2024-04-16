@@ -11,7 +11,7 @@ Add the following to your setup.py
     ],
 ```
 
-## With Dbrocket
+## With DBrocket
 
 Cell 1
 

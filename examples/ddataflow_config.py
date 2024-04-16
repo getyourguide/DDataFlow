@@ -6,7 +6,7 @@ config = {
         "demo_tours": {
             "source": lambda spark: spark.table('demo_tours'),
             "filter": lambda df: df.limit(500)
-        }
+        },
         "demo_locations": {
             "source": lambda spark: spark.table('demo_locations'),
             "default_sampling": True,

@@ -14,13 +14,12 @@ pip install ddataflow
 DDataflow is declarative and is completely configurable a single configuration in DDataflow startup. To create a configuration for you project simply run:
 
 ```shell
-
 ddataflow setup_project
 ```
 
 You can use this config also in in a notebook, or using databricks-connect or in the repository with db-rocket. Example config below:
 
-```py
+```python
 #later save this script as ddataflow_config.py to follow our convention
 from ddataflow import DDataflow
 import pyspark.sql.functions as F

@@ -1,0 +1,31 @@
+site_name: DDataflow
+site_url: https://example.com/
+
+theme:
+  name: material
+
+markdown_extensions:
+  - pymdownx.superfences
+
+nav:
+  - 'index.md'
+  - 'integrator_manual.md'
+  - 'local_development.md'
+  - 'sampling.md'
+  - API Reference:
+    - 'api_reference/DDataflow.md'
+    - 'api_reference/DataSource.md'
+    - 'api_reference/DataSources.md'
+    - 'api_reference/DataSourceDownloader.md'
+  - 'troubleshooting.md'
+  - 'FAQ.md'
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        # See: https://mkdocstrings.github.io/python/usage/
+        python:
+          options:
+            docstring_style: sphinx
+            allow_inspection: true

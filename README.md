@@ -3,7 +3,7 @@
 DDataFlow is an end2end tests and local development solution for machine learning and data pipelines using pyspark.
 Check out this blogpost if you want to [understand deeper its design motivation](https://www.getyourguide.careers/posts/ddataflow-a-tool-for-data-end-to-end-tests-for-machine-learning-pipelines).
 
-![ddataflow overview](ddataflow.png)
+![ddataflow overview](docs/ddataflow.png)
 
 You can find our documentation in the [docs folder](https://github.com/getyourguide/DDataFlow/tree/main/docs). And see the complete code reference [here](https://code.getyourguide.com/DDataFlow/ddataflow/ddataflow.html).
 
@@ -15,7 +15,7 @@ You can find our documentation in the [docs folder](https://github.com/getyourgu
 
 Enables to run on the pipelines in the CI
 
-## 1. Install Ddataflow
+## 1. Install DDataflow
 
 ```sh
 pip install ddataflow 
@@ -95,4 +95,15 @@ Check out our [FAQ in case of problems](https://github.com/getyourguide/DDataFlo
 
 ## Contributing
 
-This project requires manual release at the moment. See the docs and request a pypi access if you want to contribute.
+We welcome contributions to DDataFlow! If you would like to contribute, please follow these guidelines:
+
+1. Fork the repository and create a new branch for your contribution.
+2. Make your changes and ensure that the code passes all tests.
+3. Submit a pull request with a clear description of your changes and the problem it solves.
+
+Please note that all contributions are subject to review and approval by the project maintainers. We appreciate your help in making DDataFlow even better!
+
+If you have any questions or need any help, please don't hesitate to reach out. We are here to assist you throughout the contribution process.
+
+## License
+DDataFlow is licensed under the [MIT License](https://github.com/getyourguide/DDataFlow/blob/main/LICENSE).

@@ -1,15 +1,23 @@
 site_name: DDataflow
-site_url: https://example.com/
+site_url: https://code.getyourguide.com/DDataFlow/
+repo_url: https://github.com/getyourguide/DDataFlow/
+edit_uri: edit/main/docs/
 
 theme:
   name: material
+  icon:
+    edit: material/pencil
+    repo:  fontawesome/brands/github
+  features:
+    - content.action.edit
+
+
 
 markdown_extensions:
   - pymdownx.superfences
 
 nav:
   - 'index.md'
-  - 'integrator_manual.md'
   - 'local_development.md'
   - 'sampling.md'
   - API Reference:

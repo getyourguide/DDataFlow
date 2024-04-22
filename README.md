@@ -5,7 +5,7 @@ Check out this blogpost if you want to [understand deeper its design motivation]
 
 ![ddataflow overview](docs/ddataflow.png)
 
-You can find our documentation in the [docs folder](https://github.com/getyourguide/DDataFlow/tree/main/docs). And see the complete code reference [here](https://code.getyourguide.com/DDataFlow/ddataflow/ddataflow.html).
+You can find our documentation under this [link](https://code.getyourguide.com/DDataFlow/).
 
 ## Features
 

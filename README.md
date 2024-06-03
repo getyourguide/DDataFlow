@@ -26,7 +26,6 @@ pip install ddataflow
 
 # Getting Started (<5min Tutorial)
 
-This tutorial aims to show you the core features though, for the complete reference see the [integration manual](docs/integrator_manual.md) in the docs.
 
 ## 1. Setup some synthetic data
 

@@ -129,6 +129,4 @@ class DataSource:
 
         print(f"Amount of rows in dataframe to estimate size: {df.count()}")
         average_variable_size_bytes = 50
-        return (df.count() * len(df.columns) * average_variable_size_bytes) / (
-            1024**3
-        )
+        return (df.count() * len(df.columns) * average_variable_size_bytes) / (1024**3)

@@ -8,14 +8,8 @@ def test_sql():
 
     config = {
         "project_folder_name": "unit_tests",
-        "data_sources": {
-            "location": {
-                'default_sampling': True
-            }
-        },
-        'default_sampler': {
-            'limit': 2
-        }
+        "data_sources": {"location": {"default_sampling": True}},
+        "default_sampler": {"limit": 2},
     }
     ddataflow = DDataflow(**config)
 

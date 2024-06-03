@@ -41,6 +41,7 @@ config = {
     "data_source_size_limit_gb": 3,
 }
 
+
 def test_initialize_successfully():
     """
     Tests that a correct config will not fail to be instantiated

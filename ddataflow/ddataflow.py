@@ -6,9 +6,13 @@ from ddataflow.data_source import DataSource
 from ddataflow.data_sources import DataSources
 from ddataflow.downloader import DataSourceDownloader
 from ddataflow.exceptions import WriterNotFoundException
-from ddataflow.sampling.default import build_default_sampling_for_sources, DefaultSamplerOptions
+from ddataflow.sampling.default import (
+    build_default_sampling_for_sources,
+    DefaultSamplerOptions,
+)
 from ddataflow.sampling.sampler import Sampler
 from ddataflow.utils import get_or_create_spark, using_databricks_connect
+from pyspark.sql import DataFrame
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
@@ -72,7 +76,6 @@ class DDataflow:
         self._snapshot_path = base_path + "/" + project_folder_name
         self._local_path = self._LOCAL_BASE_SNAPSHOT_PATH + "/" + project_folder_name
 
-
         if default_sampler:
             # set this before creating data sources
             DefaultSamplerOptions.set(default_sampler)
@@ -91,7 +94,6 @@ class DDataflow:
             snapshot_path=self._snapshot_path,
             size_limit=self._size_limit,
         )
-
 
         self._data_writers: dict = data_writers if data_writers else {}
 
@@ -116,8 +118,10 @@ class DDataflow:
         if self._ddataflow_enabled:
             self.set_logger_level(logging.DEBUG)
         else:
-            logger.info("DDataflow is now DISABLED."
-                        "PRODUCTION data will be used and it will write to production tables.")
+            logger.info(
+                "DDataflow is now DISABLED."
+                "PRODUCTION data will be used and it will write to production tables."
+            )
 
     @staticmethod
     def setup_project():
@@ -125,6 +129,7 @@ class DDataflow:
         Sets up a new ddataflow project with empty data sources in the current directory
         """
         from ddataflow.setup.setup_project import setup_project
+
         setup_project()
 
     @staticmethod
@@ -167,33 +172,7 @@ $ ddataflow setup_project"""
 
         return ddataflow_config.ddataflow
 
-    def _get_spark(self):
-        return get_or_create_spark()
-
-    def enable(self):
-        """
-        When enabled ddataflow will read from the filtered datasoruces
-        instead of production tables. And write to testing tables instead of production ones.
-        """
-
-        self._ddataflow_enabled = True
-
-    def is_enabled(self):
-        return self._ddataflow_enabled
-
-    def enable_offline(self):
-        """Programatically enable offline mode"""
-        self._offline_enabled = True
-        self.enable()
-
-    def is_local(self):
-        return self._offline_enabled
-
-    def disable_offline(self):
-        """Programatically enable offline mode"""
-        self._offline_enabled = False
-
-    def source(self, name: str, debugger=False):
+    def source(self, name: str, debugger=False) -> DataFrame:
         """
         Gives access to the data source configured in the dataflow
 
@@ -204,7 +183,7 @@ $ ddataflow setup_project"""
         logger.debug("Loading data source")
         data_source: DataSource = self._data_sources.get_data_source(name)
         logger.debug("Data source loaded")
-        df = self._get_df_from_source(data_source)
+        df = self._get_data_from_data_source(data_source)
 
         if debugger:
             logger.debug(f"Debugger enabled: {debugger}")
@@ -213,7 +192,33 @@ $ ddataflow setup_project"""
 
         return df
 
-    def source_name(self, name, disable_view_creation=False):
+    def _get_spark(self):
+        return get_or_create_spark()
+
+    def enable(self):
+        """
+        When enabled ddataflow will read from the filtered data sources
+        instead of production tables. And write to testing tables instead of production ones.
+        """
+
+        self._ddataflow_enabled = True
+
+    def is_enabled(self) -> bool:
+        return self._ddataflow_enabled
+
+    def enable_offline(self):
+        """Programatically enable offline mode"""
+        self._offline_enabled = True
+        self.enable()
+
+    def is_local(self) -> bool:
+        return self._offline_enabled
+
+    def disable_offline(self):
+        """Programatically enable offline mode"""
+        self._offline_enabled = False
+
+    def source_name(self, name, disable_view_creation=False) -> str:
         """
         Given the name of a production table, returns the name of the corresponding ddataflow table when ddataflow is enabled
         If ddataflow is disabled get the production one.
@@ -221,6 +226,7 @@ $ ddataflow setup_project"""
         logger.debug("Source name used: ", name)
         source_name = name
 
+        # the gist of ddtafalow
         if self._ddataflow_enabled:
             source_name = self._get_new_table_name(name)
             if disable_view_creation:
@@ -286,7 +292,7 @@ $ ddataflow setup_project"""
         """Disable ddtaflow overriding tables, uses production state in other words"""
         self._ddataflow_enabled = False
 
-    def _get_df_from_source(self, data_source):
+    def _get_data_from_data_source(self, data_source: DataSource) -> DataFrame:
         if not self._ddataflow_enabled:
             logger.debug("DDataflow not enabled")
             # goes directly to production without prefilters

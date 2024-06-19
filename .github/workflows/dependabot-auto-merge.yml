@@ -1,0 +1,24 @@
+name: Dependabot auto-merge
+on:
+  schedule:
+    - cron: '*/2 * * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto merge
+    runs-on: [node-small, self-hosted]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.7
+      - name: Merge PRs
+        uses: getyourguide/actions/dependabot-merge@main
+        with:
+          github_token: ${{ secrets.GYGROBOT_PR_TOKEN }}
+          slack_channel: "#mlplatform-alerts"
+          slack_dependabot_token: ${{ secrets.SLACK_DEPENDABOT_TOKEN }} # globally accessible
+          slack_ping_support: true

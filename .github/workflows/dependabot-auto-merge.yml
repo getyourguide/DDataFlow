@@ -1,7 +1,10 @@
 name: Dependabot auto-merge
 on:
   schedule:
-    - cron: '*/2 * * * *'
+    # Only merge PRs (UTC time). Please keep in sync with the if statement (around line 24).
+    - cron: "0 8 * * Mon,Wed"
+    # Report blocked PRs (UTC time)
+    - cron: "0 14 * * Mon"
 
 permissions:
   contents: write
@@ -10,7 +13,7 @@ permissions:
 jobs:
   auto-merge:
     name: Auto merge
-    runs-on: [node-small]
+    runs-on: [node-small, self-hosted]
 
     steps:
       - name: Checkout

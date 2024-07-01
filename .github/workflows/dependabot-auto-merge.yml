@@ -13,7 +13,7 @@ permissions:
 jobs:
   auto-merge:
     name: Auto merge
-    runs-on: [node-small, self-hosted]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout

@@ -1,0 +1,41 @@
+name: Dependabot Approve and Merge
+
+on:
+  pull_request:
+    types: [opened]
+  workflow_dispatch:
+  schedule:
+    # Run merges daily at 9am UTC
+    - cron: "0 9 * * Mon-Fri"
+    # Notify supports for blocked PRs only monday 10am UTC
+    - cron: "0 10 * * Mon"
+
+jobs:
+  auto-approve:
+    name: Approve PR
+    uses: getyourguide/actions/.github/workflows/dependabot-approve.yml@main
+    with:
+      # The target input allows to select which updates to auto approve.
+      # Values for increment:        patch | minor | major
+      # Values for dependency type:  all | development | production
+      # In this case we will auto-approve all dependencies, except major updates for 
+      # production dependencies which should be manually approved
+      targets: patch:all,minor:all,major:development
+      pr-url: ${{ github.event.pull_request.html_url }} 
+
+  auto-merge:
+    name: Auto merge
+    runs-on: [node-small, self-hosted]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge PRs
+        uses: getyourguide/actions/dependabot-merge@main
+        with:
+          github_token: ${{ secrets.GYGROBOT_PR_TOKEN }}
+          slack_channel: "#mlplatform-alerts"
+          slack_dependabot_token: ${{ secrets.SLACK_DEPENDABOT_TOKEN }}
+          slack_ping_support: true
+          # Report merges daily, and only once a week report blocked PRs (ping support)
+          # Hide blocked PRs from the daily execution
+          hide_report_sections: ${{ (github.event.schedule == '0 9 * * Mon-Fri' && 'blocked,pending-approval') || ''}}

@@ -1,12 +1,10 @@
-name: Dependabot Approve and Merge
+name: Dependabot Approve
 
 on:
-  pull_request:
-    types: [opened]
   workflow_dispatch:
   schedule:
     # Run merges daily at 9am UTC
-    - cron: "0 9 * * Mon-Fri"
+    - cron: "0 9 * * Mon"
     # Notify supports for blocked PRs only monday 10am UTC
     - cron: "0 10 * * Mon"
 

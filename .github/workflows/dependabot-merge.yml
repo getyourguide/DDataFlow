@@ -6,6 +6,10 @@ on:
   - cron: 0 9 * * Mon
   - cron: 0 10 * * Mon
 
+
+permissions:
+  pull-requests: write
+
 jobs:
   auto-approve:
     name: Approve PR

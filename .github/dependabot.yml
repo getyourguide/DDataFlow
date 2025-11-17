@@ -6,4 +6,4 @@ updates:
       interval: weekly
       day: sunday
       timezone: Europe/Berlin
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1

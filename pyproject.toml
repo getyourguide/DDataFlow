@@ -21,7 +21,7 @@ requests = "^2.23.3"
 ddataflow = 'ddataflow.ddataflow:main'
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2"
+pytest = ">=9.0.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

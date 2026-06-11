@@ -7,9 +7,9 @@ readme = "README.md"
 repository = "https://github.com/getyourguide/DDataFlow"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.10,<4"
 databricks-cli = {version = ">=0.16"}
-pyspark = "3.4.1"
+pyspark = ">=3.4.4"
 fire = ">=0.4"
 # this is not a direct dependency of the template, but a dependency of databricks-cli
 # that comes from mlflow, if we dont pin it here we get a lower version that has a security problem
@@ -21,7 +21,7 @@ requests = "^2.23.3"
 ddataflow = 'ddataflow.ddataflow:main'
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2"
+pytest = ">=9.0.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

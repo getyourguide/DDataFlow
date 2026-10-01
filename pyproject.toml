@@ -13,9 +13,12 @@ pyspark = ">=3.4.4"
 fire = ">=0.4"
 # this is not a direct dependency of the template, but a dependency of databricks-cli
 # that comes from mlflow, if we dont pin it here we get a lower version that has a security problem
-oauthlib = ">=3.2.1"
-urllib3 = ">=1.24.2"
+oauthlib = ">=4.0.0"
+urllib3 = ">=2.8.0"
 requests = "^2.23.3"
+# PyJWT is a transitive dependency of databricks-cli; pinned here to pull in fixes for
+# multiple GHSA advisories (JWK parsing, JWKS redirects/SSRF, HMAC/asymmetric key confusion)
+PyJWT = ">=2.15.0"
 
 [tool.poetry.scripts]
 ddataflow = 'ddataflow.ddataflow:main'

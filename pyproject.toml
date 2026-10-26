@@ -19,6 +19,8 @@ requests = "^2.23.3"
 # PyJWT is a transitive dependency of databricks-cli; pinned here to pull in fixes for
 # multiple GHSA advisories (JWK parsing, JWKS redirects/SSRF, HMAC/asymmetric key confusion)
 PyJWT = ">=2.15.0"
+# certifi is a transitive dependency of requests; pinned here to drop the distrusted emSign root CAs (GHSA-6q48-6c7w-9gw2)
+certifi = ">=2026.10.19"
 
 [tool.poetry.scripts]
 ddataflow = 'ddataflow.ddataflow:main'
